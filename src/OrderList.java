@@ -1,4 +1,4 @@
-package coffee_shop;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 class OrderList {
+
+	public void loadOrderListFromFile(String string) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
  
