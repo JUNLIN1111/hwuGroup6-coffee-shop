@@ -26,12 +26,13 @@ public class Menu {
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				// 璺宠繃绌鸿
+
 				if (line.trim().isEmpty()) {
 					continue;
 				}
 				
-				// 瑙ｆ瀽姣忚鏁版嵁锛屾牸寮忓亣瀹氫负锛歩d,description,category,cost
+
+				// Parse each line, format: id,description,category,cost
 				String[] parts = line.split(",");
 				if (parts.length == 4) {
 					try {
@@ -43,14 +44,15 @@ public class Menu {
 						Item item = new Item(id, description, category, cost);
 						items.add(item);
 					} catch (NumberFormatException e) {
-						System.out.println("Error: Incorrect price format - " + line);
+
+						System.out.println("Error: Invalid price format - " + line);
 					}
 				} else {
-					System.out.println("Error: Incorrect order format- " + line);
+					System.out.println("Error: Invalid line format - " + line);
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("An error occurred while reading the order file:" + e.getMessage());
+			System.out.println("Error reading menu file: " + e.getMessage());
 		}
 	}
 
@@ -73,11 +75,12 @@ public class Menu {
 
 	public void addItem(Item item) {
 		if (item == null) {
-			throw new IllegalArgumentException("Order cannot be empty");
+
+			throw new IllegalArgumentException("Item cannot be null");
 		}
-		// 妫�鏌D鏄惁宸插瓨鍦�
+		// Check if ID already exists
 		if (findItemById(item.getId()) != null) {
-			throw new IllegalArgumentException("Order ID already exists:" + item.getId());
+			throw new IllegalArgumentException("Item ID already exists: " + item.getId());
 		}
 		items.add(item);
 	}
@@ -89,7 +92,8 @@ public class Menu {
 		}
 	}
 
-	// 鑾峰彇鎵�鏈夊彲鐢ㄧ殑绫诲埆
+
+	// Get all available categories
 	public List<String> getAllCategories() {
 		return items.stream()
 				   .map(Item::getCategory)
@@ -97,7 +101,8 @@ public class Menu {
 				   .collect(Collectors.toList());
 	}
 
-	// 鑾峰彇鑿滃崟椤规暟閲�
+
+	// Get total number of menu items
 	public int getItemCount() {
 		return items.size();
 	}
