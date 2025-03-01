@@ -1,0 +1,7 @@
+C001,Americano,Coffee,25.0
+C002,Latte,Coffee,30.0
+C003,Cappuccino,Coffee,30.0
+T001,Black Tea,Tea,20.0
+T002,Green Tea,Tea,20.0
+D001,Chocolate Cake,Dessert,35.0
+D002,Tiramisu,Dessert,40.0 
