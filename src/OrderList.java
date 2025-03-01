@@ -10,9 +10,11 @@ import java.util.stream.Collectors;
 
 class OrderList {
 	private List<Order> orders;
+	private Menu menu;
 	
-	public OrderList() {
-		orders = new ArrayList<>();
+	public OrderList(Menu menu) {
+		this.orders = new ArrayList<>();
+		this.menu = menu;
 	}
 	
 	public List<Order> getOrderList() {
@@ -22,50 +24,75 @@ class OrderList {
 	public void loadOrderListFromFile(String filePath) {
 		File file = new File(filePath);
 		if (!file.exists()) {
-			System.out.println("错误：订单文件不存在 - " + filePath);
+			System.out.println("Error: Order file not found - " + filePath);
 			return;
 		}
 		
-		orders.clear(); // 清空现有订单
+		orders.clear(); // Clear existing orders
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String line;
+			String currentOrderId = null;
+			String currentCustomerId = null;
+			String currentTimestamp = null;
+			List<Item> currentItems = new ArrayList<>();
+			
 			while ((line = reader.readLine()) != null) {
 				if (line.trim().isEmpty()) {
 					continue;
 				}
 				
-				// 解析订单数据，格式：orderId,customerId,timestamp,itemId,description,category,cost
+				// Parse order data, format: orderId,customerId,timestamp,itemId
 				String[] parts = line.split(",");
-				if (parts.length >= 7) {
+				if (parts.length >= 4) {  // 现在只需要4个字段
 					try {
 						String orderId = parts[0];
 						String customerId = parts[1];
 						String timestamp = parts[2];
-						
-						// 创建商品
 						String itemId = parts[3];
-						String description = parts[4];
-						String category = parts[5];
-						double cost = Double.parseDouble(parts[6]);
-						Item item = new Item(itemId, description, category, cost);
 						
-						// 创建商品列表
-						List<Item> items = new ArrayList<>();
-						items.add(item);
+						// 从菜单中查找商品
+						Item menuItem = menu.findItemById(itemId);
+						if (menuItem == null) {
+							System.out.println("Error: Item not found in menu - " + itemId);
+							continue;
+						}
 						
-						// 创建订单
-						Order order = new Order(orderId, customerId, timestamp, items);
-						orders.add(order);
+						// If this is a new order
+						if (currentOrderId == null || !currentOrderId.equals(orderId)) {
+							// Save previous order if exists
+							if (currentOrderId != null) {
+								Order order = new Order(currentOrderId, currentCustomerId, currentTimestamp, 
+													  new ArrayList<>(currentItems));
+								orders.add(order);
+							}
+							// Start new order
+							currentOrderId = orderId;
+							currentCustomerId = customerId;
+							currentTimestamp = timestamp;
+							currentItems.clear();
+						}
+						
+						// Add item to current order
+						currentItems.add(menuItem);
+						
 					} catch (NumberFormatException e) {
-						System.out.println("错误：价格格式不正确 - " + line);
+						System.out.println("Error: Invalid number format - " + line);
 					}
 				} else {
-					System.out.println("错误：订单格式不正确 - " + line);
+					System.out.println("Error: Invalid line format - " + line);
 				}
 			}
+			
+			// Add the last order if exists
+			if (currentOrderId != null) {
+				Order order = new Order(currentOrderId, currentCustomerId, currentTimestamp, 
+									  new ArrayList<>(currentItems));
+				orders.add(order);
+			}
+			
 		} catch (IOException e) {
-			System.out.println("读取订单文件时发生错误：" + e.getMessage());
+			System.out.println("Error reading order file: " + e.getMessage());
 		}
 	}
 	
@@ -142,3 +169,4 @@ class OrderList {
 }
 
  
+
