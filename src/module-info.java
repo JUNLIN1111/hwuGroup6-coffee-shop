@@ -1,8 +1,0 @@
-/**
- * 
- */
-/**
- * 
- */
-module coffee_shop {
-}
