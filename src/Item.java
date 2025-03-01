@@ -3,15 +3,16 @@ public class Item {
     private String description;
     private String category;
     private double cost;
-    private static final int MAX_DESCRIPTION_LENGTH = 50; // 最大描述长度
-
+    private static final int MAX_DESCRIPTION_LENGTH = 50;// 最大描述长度
+    private int number;
+    
     public Item(String id, String description, String category, double cost) throws IllegalArgumentException {
         // Validate id
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("ID cannot be null or empty.");
         }
         this.id = id.trim();
-
+        
         // Validate description
         if (description == null || description.trim().isEmpty()) {
             throw new IllegalArgumentException("Description cannot be null or empty.");
@@ -49,6 +50,9 @@ public class Item {
     public double getCost() {
         return cost;
     }
-
+    
+    public double getNumber() {
+        return number;
+    }
     
 }

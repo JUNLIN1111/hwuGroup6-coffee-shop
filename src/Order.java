@@ -7,7 +7,7 @@ public class Order {
     private String customerId;
     private String timeStamp;
     private List<Item> itemList;
-
+    
     public Order(String orderId, String customerId, String timeStamp, List<Item> itemList) {
         // Validate orderId
         if (orderId == null || orderId.trim().isEmpty()) {
@@ -39,14 +39,29 @@ public class Order {
     public String getTimeStamp() { return timeStamp; }
     public List<Item> getItemList() { return itemList; }
 
-    
     public double calculateTotalCost() {
-        double totalCost = 0;
-        for (Item item : itemList) {
-            totalCost += item.getCost();
-        }
-        return totalCost;
-    }
+        double total = 0.0;
+        int dessertCount = 0;
+        int coffeeOrTeaCount = 0;
+        int totalItemCount = itemList.size();
 
-    
+        for (Item item : itemList) {
+            total += item.getCost();
+
+            if (item.getCategory().equalsIgnoreCase("Dessert")) {
+                dessertCount++;
+            } else if (item.getCategory().equalsIgnoreCase("Coffee") || item.getCategory().equalsIgnoreCase("Tea")) {
+                coffeeOrTeaCount++;
+            }
+        }
+
+        double discount1 = (dessertCount >= 2 && coffeeOrTeaCount >= 1) ? total * 0.8 : total;
+        double discount2 = (totalItemCount >= 5) ? total * 0.9 : total;
+        double discount3 = (total > 100) ? total * 0.85 : total;
+
+        // Choose the best discount (minimum total price)
+        total = Math.min(discount1, Math.min(discount2, discount3));
+
+        return total;
+    }
 }
