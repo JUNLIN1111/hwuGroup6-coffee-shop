@@ -17,21 +17,21 @@ public class Menu {
 	public void loadMenuFromFile(String filePath) {
 		File file = new File(filePath);
 		if (!file.exists()) {
-			System.out.println("错误：菜单文件不存在 - " + filePath);
+			System.out.println("Error: Menu file not found - " + filePath);
 			return;
 		}
 
-		items.clear(); // 清空现有菜单项
+		items.clear(); // Clear existing menu items
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				// 跳过空行
+				// Skip empty lines
 				if (line.trim().isEmpty()) {
 					continue;
 				}
 				
-				// 解析每行数据，格式假定为：id,description,category,cost
+				// Parse each line, format: id,description,category,cost
 				String[] parts = line.split(",");
 				if (parts.length == 4) {
 					try {
@@ -43,14 +43,14 @@ public class Menu {
 						Item item = new Item(id, description, category, cost);
 						items.add(item);
 					} catch (NumberFormatException e) {
-						System.out.println("错误：价格格式不正确 - " + line);
+						System.out.println("Error: Invalid price format - " + line);
 					}
 				} else {
-					System.out.println("错误：行格式不正确 - " + line);
+					System.out.println("Error: Invalid line format - " + line);
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("读取菜单文件时发生错误：" + e.getMessage());
+			System.out.println("Error reading menu file: " + e.getMessage());
 		}
 	}
 
@@ -73,11 +73,11 @@ public class Menu {
 
 	public void addItem(Item item) {
 		if (item == null) {
-			throw new IllegalArgumentException("商品不能为空");
+			throw new IllegalArgumentException("Item cannot be null");
 		}
-		// 检查ID是否已存在
+		// Check if ID already exists
 		if (findItemById(item.getId()) != null) {
-			throw new IllegalArgumentException("商品ID已存在：" + item.getId());
+			throw new IllegalArgumentException("Item ID already exists: " + item.getId());
 		}
 		items.add(item);
 	}
@@ -89,7 +89,7 @@ public class Menu {
 		}
 	}
 
-	// 获取所有可用的类别
+	// Get all available categories
 	public List<String> getAllCategories() {
 		return items.stream()
 				   .map(Item::getcategory)
@@ -97,7 +97,7 @@ public class Menu {
 				   .collect(Collectors.toList());
 	}
 
-	// 获取菜单项数量
+	// Get total number of menu items
 	public int getItemCount() {
 		return items.size();
 	}
