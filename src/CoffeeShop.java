@@ -7,11 +7,11 @@ public class CoffeeShop {
 		
 		// initialize item list
 		Menu menu = new Menu();
-		menu.loadMenuFromFile("file.txt");
+		menu.loadMenuFromFile("menu.txt");
 		
 		// initialize order list
 		OrderList orderList = new OrderList();
-		orderList.loadOrderListFromFile("file.txt");
+		orderList.loadOrderListFromFile("orders.txt");
 		
 		OrderProcessor orderProcessor = new OrderProcessor(orderList);
 		

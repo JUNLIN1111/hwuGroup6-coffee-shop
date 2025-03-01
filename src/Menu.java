@@ -17,21 +17,21 @@ public class Menu {
 	public void loadMenuFromFile(String filePath) {
 		File file = new File(filePath);
 		if (!file.exists()) {
-			System.out.println("错误：菜单文件不存在 - " + filePath);
+			System.out.println("Error: Order file does not exist - " + filePath);
 			return;
 		}
 
-		items.clear(); // 清空现有菜单项
+		items.clear(); // 娓呯┖鐜版湁鑿滃崟椤�
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				// 跳过空行
+				// 璺宠繃绌鸿
 				if (line.trim().isEmpty()) {
 					continue;
 				}
 				
-				// 解析每行数据，格式假定为：id,description,category,cost
+				// 瑙ｆ瀽姣忚鏁版嵁锛屾牸寮忓亣瀹氫负锛歩d,description,category,cost
 				String[] parts = line.split(",");
 				if (parts.length == 4) {
 					try {
@@ -43,14 +43,14 @@ public class Menu {
 						Item item = new Item(id, description, category, cost);
 						items.add(item);
 					} catch (NumberFormatException e) {
-						System.out.println("错误：价格格式不正确 - " + line);
+						System.out.println("Error: Incorrect price format - " + line);
 					}
 				} else {
-					System.out.println("错误：行格式不正确 - " + line);
+					System.out.println("Error: Incorrect order format- " + line);
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("读取菜单文件时发生错误：" + e.getMessage());
+			System.out.println("An error occurred while reading the order file:" + e.getMessage());
 		}
 	}
 
@@ -67,17 +67,17 @@ public class Menu {
 
 	public List<Item> findItemsByCategory(String category) {
 		return items.stream()
-				   .filter(item -> item.getcategory().equals(category))
+				   .filter(item -> item.getCategory().equals(category))
 				   .collect(Collectors.toList());
 	}
 
 	public void addItem(Item item) {
 		if (item == null) {
-			throw new IllegalArgumentException("商品不能为空");
+			throw new IllegalArgumentException("Order cannot be empty");
 		}
-		// 检查ID是否已存在
+		// 妫�鏌D鏄惁宸插瓨鍦�
 		if (findItemById(item.getId()) != null) {
-			throw new IllegalArgumentException("商品ID已存在：" + item.getId());
+			throw new IllegalArgumentException("Order ID already exists:" + item.getId());
 		}
 		items.add(item);
 	}
@@ -89,16 +89,26 @@ public class Menu {
 		}
 	}
 
-	// 获取所有可用的类别
+	// 鑾峰彇鎵�鏈夊彲鐢ㄧ殑绫诲埆
 	public List<String> getAllCategories() {
 		return items.stream()
-				   .map(Item::getcategory)
+				   .map(Item::getCategory)
 				   .distinct()
 				   .collect(Collectors.toList());
 	}
 
-	// 获取菜单项数量
+	// 鑾峰彇鑿滃崟椤规暟閲�
 	public int getItemCount() {
 		return items.size();
+	}
+	
+	// TODO an exception is needed
+	public int indexOf(Item _item) {
+		for (int i = 0; i < items.size(); i++) {
+			if (items.get(i).getId().equals(_item.getId())) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

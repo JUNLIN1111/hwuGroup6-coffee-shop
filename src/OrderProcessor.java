@@ -7,5 +7,9 @@ public class OrderProcessor {
 	public OrderProcessor(OrderList orderList) {
 		this.orderList = orderList;
 	}
+	
+	public OrderList getList() {
+		return orderList;
+	}
 
 }
