@@ -106,11 +106,11 @@ class OrderList {
 	
 	public void generateLog() {
 		try (FileWriter writer = new FileWriter("order_log.txt", true)) {
-			writer.write("\n=== 订单日志 ===\n");
-			writer.write("总订单数：" + orders.size() + "\n");
+			writer.write("\n=== Order Log ===\n");
+			writer.write("Total Orders: " + orders.size() + "\n");
 			
-			// 按客户ID分组统计
-			writer.write("\n客户订单统计：\n");
+			// Group statistics by customer
+			writer.write("\nCustomer Order Statistics:\n");
 			orders.stream()
 				  .collect(Collectors.groupingBy(Order::getCustomerId))
 				  .forEach((customerId, customerOrders) -> {
@@ -118,29 +118,27 @@ class OrderList {
 						  double totalCost = customerOrders.stream()
 														 .mapToDouble(Order::calculateTotalCost)
 														 .sum();
-						  writer.write(String.format("客户ID: %s, 订单数: %d, 总消费: ￥%.2f\n",
+						  writer.write(String.format("Customer ID: %s, Order Count: %d, Total Spent: $%.2f\n",
 									 customerId, customerOrders.size(), totalCost));
 					  } catch (IOException e) {
-						  System.out.println("写入日志时发生错误：" + e.getMessage());
+						  System.out.println("Error writing to log: " + e.getMessage());
 					  }
 				  });
 			
-			writer.write("\n详细订单信息：\n");
+			writer.write("\nDetailed Order Information:\n");
 			for (Order order : orders) {
-				writer.write(String.format("订单ID: %s, 客户ID: %s, 时间: %s\n",
+				writer.write(String.format("Order ID: %s, Customer ID: %s, Time: %s\n",
 						   order.getOrderId(), order.getCustomerId(), order.getTimeStamp()));
 				for (Item item : order.getItemList()) {
-					writer.write(String.format("  - %s: %s (￥%.2f)\n",
+					writer.write(String.format("  - %s: %s ($%.2f)\n",
 							   item.getId(), item.getDescription(), item.getCost()));
 				}
-				writer.write(String.format("  总计: ￥%.2f\n\n", order.calculateTotalCost()));
+				writer.write(String.format("  Total: $%.2f\n\n", order.calculateTotalCost()));
 			}
 		} catch (IOException e) {
-			System.out.println("生成日志时发生错误：" + e.getMessage());
+			System.out.println("Error generating log: " + e.getMessage());
 		}
 	}
 }
-
- 
 
  
