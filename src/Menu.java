@@ -17,21 +17,20 @@ public class Menu {
 	public void loadMenuFromFile(String filePath) {
 		File file = new File(filePath);
 		if (!file.exists()) {
-			System.out.println("Error: Order file does not exist - " + filePath);
+			System.out.println("Error: Menu file not found - " + filePath);
 			return;
 		}
 
-		items.clear(); // 娓呯┖鐜版湁鑿滃崟椤�
+		items.clear(); // Clear existing menu items
 		
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-
+				// Skip empty lines
 				if (line.trim().isEmpty()) {
 					continue;
 				}
 				
-
 				// Parse each line, format: id,description,category,cost
 				String[] parts = line.split(",");
 				if (parts.length == 4) {
@@ -44,7 +43,6 @@ public class Menu {
 						Item item = new Item(id, description, category, cost);
 						items.add(item);
 					} catch (NumberFormatException e) {
-
 						System.out.println("Error: Invalid price format - " + line);
 					}
 				} else {
@@ -69,13 +67,12 @@ public class Menu {
 
 	public List<Item> findItemsByCategory(String category) {
 		return items.stream()
-				   .filter(item -> item.getCategory().equals(category))
+				   .filter(item -> item.getcategory().equals(category))
 				   .collect(Collectors.toList());
 	}
 
 	public void addItem(Item item) {
 		if (item == null) {
-
 			throw new IllegalArgumentException("Item cannot be null");
 		}
 		// Check if ID already exists
@@ -92,28 +89,16 @@ public class Menu {
 		}
 	}
 
-
 	// Get all available categories
 	public List<String> getAllCategories() {
 		return items.stream()
-				   .map(Item::getCategory)
+				   .map(Item::getcategory)
 				   .distinct()
 				   .collect(Collectors.toList());
 	}
 
-
 	// Get total number of menu items
 	public int getItemCount() {
 		return items.size();
-	}
-	
-	// TODO an exception is needed
-	public int indexOf(Item _item) {
-		for (int i = 0; i < items.size(); i++) {
-			if (items.get(i).getId().equals(_item.getId())) {
-				return i;
-			}
-		}
-		return -1;
 	}
 }
