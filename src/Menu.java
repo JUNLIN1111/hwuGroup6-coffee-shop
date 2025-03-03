@@ -101,4 +101,13 @@ public class Menu {
 	public int getItemCount() {
 		return items.size();
 	}
+	
+	public int indexOf(Item _item) {
+		for (int i = 0; i < items.size(); i++) {
+			if (items.get(i).getId().equals(_item.getId())) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }
