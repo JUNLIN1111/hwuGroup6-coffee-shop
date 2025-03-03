@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 public class CoffeeShop {
 	public static void main(String[] args) {
@@ -11,11 +10,10 @@ public class CoffeeShop {
 		menu.loadMenuFromFile("menu.txt");
 
 		// 初始化订单列表
-		OrderList orderList = new OrderList(menu);
-		orderList.loadOrderListFromFile("orders.txt");
+		OrderList orderList = new OrderList(menu); // ✅ 传入 Menu
 
-		// 订单处理器
-		OrderProcessor orderProcessor = new OrderProcessor(orderList);
+		// 订单处理器（✅ 传入 orderList 和 menu）
+		OrderProcessor orderProcessor = new OrderProcessor(orderList, menu);
 
 		// 启动 UI
 		SwingUtilities.invokeLater(() -> new CoffeeShopUI(menu, orderProcessor));

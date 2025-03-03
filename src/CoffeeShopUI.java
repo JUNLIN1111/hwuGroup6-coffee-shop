@@ -117,9 +117,11 @@ public class CoffeeShopUI extends JFrame {
     }
 
     private void generateReport() {
-        orderProcessor.getList().generateLog();
-        showMessage("Order report saved to 'order_log.txt'.", JOptionPane.INFORMATION_MESSAGE);
+        String reportFilePath = "finalReport.txt";
+        orderProcessor.generateFinalReport(reportFilePath);
+        showMessage("Order report saved to '" + reportFilePath + "'.", JOptionPane.INFORMATION_MESSAGE);
     }
+
 
     private void showMessage(String message, int messageType) {
         JOptionPane.showMessageDialog(this, message, "Message", messageType);

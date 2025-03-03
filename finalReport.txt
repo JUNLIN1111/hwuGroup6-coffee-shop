@@ -11,4 +11,4 @@ D001   Chocolate Cake       Chocolate Cake        35.0               1
 D002   Tiramisu             Tiramisu              40.0               1
 --------------------------------------------------------------------------------
 
-Total income: 150.0
+Total inc4ome: 150.0
