@@ -67,7 +67,7 @@ public class Menu {
 
 	public List<Item> findItemsByCategory(String category) {
 		return items.stream()
-				   .filter(item -> item.getcategory().equals(category))
+				   .filter(item -> item.getCategory().equals(category))
 				   .collect(Collectors.toList());
 	}
 
@@ -92,7 +92,7 @@ public class Menu {
 	// Get all available categories
 	public List<String> getAllCategories() {
 		return items.stream()
-				   .map(Item::getcategory)
+				   .map(Item::getCategory)
 				   .distinct()
 				   .collect(Collectors.toList());
 	}
