@@ -55,9 +55,9 @@ public class Order {
             }
         }
 
-        double discount1 = (dessertCount >= 2 && coffeeOrTeaCount >= 1) ? total * 0.8 : total;
-        double discount2 = (totalItemCount >= 5) ? total * 0.9 : total;
-        double discount3 = (total > 100) ? total * 0.85 : total;
+        double discount1 = (dessertCount >= 2 && coffeeOrTeaCount >= 1) ? total * 0.9 : total;
+        double discount2 = (totalItemCount >= 5) ? total * 0.75 : total;
+        double discount3 = (total > 100) ? total * 0.8 : total;
 
         // Choose the best discount (minimum total price)
         total = Math.min(discount1, Math.min(discount2, discount3));
