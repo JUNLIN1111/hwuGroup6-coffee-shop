@@ -1,6 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +42,7 @@ public class CoffeeShopUI extends JFrame {
         submitButton.addActionListener(e -> submitOrder());
 
         JButton reportButton = new JButton("Generate Report");
-        reportButton.addActionListener(e -> generateReport());
+        reportButton.addActionListener(e -> generateFinalReport());
 
         totalPriceLabel = new JLabel("Total Price: $0.00");
 
@@ -126,4 +129,59 @@ public class CoffeeShopUI extends JFrame {
     private void showMessage(String message, int messageType) {
         JOptionPane.showMessageDialog(this, message, "Message", messageType);
     }
+    
+    
+    private void generateFinalReport() {
+    	StringBuilder finalreport = new StringBuilder();
+		
+		System.out.println("Generating final report...");
+				
+    	// generate all items in menu.
+    	finalreport.append("======= Final Report =======\n\n");
+    	// list of all items in menu.
+    	List<Item> itemList = menu.getItemList();
+    	// list of all orders.
+    	List<Order> orderList = orderProcessor.getList().getOrderList();
+    	
+    	// record how many times each items of ordered.
+    	int[] numberOfOrders = new int[itemList.size()];
+    	
+    	Arrays.fill(numberOfOrders,0);
+    	
+    	double finalCost = 0;
+    	for (Order order: orderList) {
+    		for (Item item: order.getItemList()) {
+    			numberOfOrders[menu.indexOf(item)]++;
+    		}
+    		finalCost += order.calculateTotalCost();
+    	}
+    	
+    	
+    	finalreport.append(String.format("%-6s %-20s %-15s %11s %23s%n",
+    	        "Code", "Name", "Category", "Price", "Number of Orders") );
+    	finalreport.append("------------------------------"
+    			+ "--------------------------------------------------\n");
+    	int i = 0;
+    	for (Item item: itemList){
+    		finalreport.append(String.format("%-6s %-20s %-15s %10s %15s%n",
+    				item.getId(), item.getDescription(), item.getDescription(),
+    				item.getCost(), numberOfOrders[i++]) );
+    	}
+    	finalreport.append("------------------------------"
+    			+ "--------------------------------------------------\n\n");
+    	
+    	finalreport.append("Total income: " + finalCost);
+    	
+
+    	String report = finalreport.toString();
+
+//    	System.out.println("Current working directory: " + System.getProperty("user.dir"));
+
+    	try (FileWriter writer = new FileWriter("finalReport.txt")){
+    		writer.write(report);
+    	} catch (IOException e) {
+    		System.out.println("Error occurred while writing file: "+e.getMessage());
+    	}
+    }
+	
 }

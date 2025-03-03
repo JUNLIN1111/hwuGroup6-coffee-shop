@@ -1,0 +1,88 @@
+
+=== Order Log ===
+Total Orders: 3
+
+Customer Order Statistics:
+Customer ID: CUST003, Order Count: 1, Total Spent: $60.00
+Customer ID: CUST002, Order Count: 1, Total Spent: $50.00
+Customer ID: CUST001, Order Count: 1, Total Spent: $60.00
+
+Detailed Order Information:
+Order ID: O001, Customer ID: CUST001, Time: 2024-01-20 10:30
+  - C001: Americano ($25.00)
+  - D001: Chocolate Cake ($35.00)
+  Total: $60.00
+
+Order ID: O002, Customer ID: CUST002, Time: 2024-01-20 11:15
+  - C002: Latte ($30.00)
+  - T001: Black Tea ($20.00)
+  Total: $50.00
+
+Order ID: O003, Customer ID: CUST003, Time: 2024-01-20 14:20
+  - T001: Black Tea ($20.00)
+  - D002: Tiramisu ($40.00)
+  Total: $60.00
+
+
+=== Order Log ===
+Total Orders: 4
+
+Customer Order Statistics:
+Customer ID: CUST003, Order Count: 1, Total Spent: $60.00
+Customer ID: Guest, Order Count: 1, Total Spent: $60.00
+Customer ID: CUST002, Order Count: 1, Total Spent: $50.00
+Customer ID: CUST001, Order Count: 1, Total Spent: $60.00
+
+Detailed Order Information:
+Order ID: O001, Customer ID: CUST001, Time: 2024-01-20 10:30
+  - C001: Americano ($25.00)
+  - D001: Chocolate Cake ($35.00)
+  Total: $60.00
+
+Order ID: O002, Customer ID: CUST002, Time: 2024-01-20 11:15
+  - C002: Latte ($30.00)
+  - T001: Black Tea ($20.00)
+  Total: $50.00
+
+Order ID: O003, Customer ID: CUST003, Time: 2024-01-20 14:20
+  - T001: Black Tea ($20.00)
+  - D002: Tiramisu ($40.00)
+  Total: $60.00
+
+Order ID: O1741017227664, Customer ID: Guest, Time: Now
+  - T002: Green Tea ($20.00)
+  - D002: Tiramisu ($40.00)
+  Total: $60.00
+
+
+=== Order Log ===
+Total Orders: 4
+
+Customer Order Statistics:
+Customer ID: CUST003, Order Count: 1, Total Spent: $60.00
+Customer ID: Guest, Order Count: 1, Total Spent: $84.00
+Customer ID: CUST002, Order Count: 1, Total Spent: $50.00
+Customer ID: CUST001, Order Count: 1, Total Spent: $60.00
+
+Detailed Order Information:
+Order ID: O001, Customer ID: CUST001, Time: 2024-01-20 10:30
+  - C001: Americano ($25.00)
+  - D001: Chocolate Cake ($35.00)
+  Total: $60.00
+
+Order ID: O002, Customer ID: CUST002, Time: 2024-01-20 11:15
+  - C002: Latte ($30.00)
+  - T001: Black Tea ($20.00)
+  Total: $50.00
+
+Order ID: O003, Customer ID: CUST003, Time: 2024-01-20 14:20
+  - T001: Black Tea ($20.00)
+  - D002: Tiramisu ($40.00)
+  Total: $60.00
+
+Order ID: O1741018780711, Customer ID: Guest, Time: Now
+  - C003: Cappuccino ($30.00)
+  - D001: Chocolate Cake ($35.00)
+  - D002: Tiramisu ($40.00)
+  Total: $84.00
+

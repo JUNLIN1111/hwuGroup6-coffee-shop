@@ -5,9 +5,9 @@ Code   Name                 Category              Price        Number of Orders
 C001   Americano            Americano             25.0               1
 C002   Latte                Latte                 30.0               1
 C003   Cappuccino           Cappuccino            30.0               0
-T001   Black Tea            Black Tea             20.0               1
+T001   Black Tea            Black Tea             20.0               2
 T002   Green Tea            Green Tea             20.0               0
-D001   Chocolate Cake       Chocolate Cake        35.0               1
+D001   Chocolate Cake       Chocolate Cake        35.0               2
 D002   Tiramisu             Tiramisu              40.0               1
 --------------------------------------------------------------------------------
 
