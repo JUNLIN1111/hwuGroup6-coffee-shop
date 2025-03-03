@@ -1,19 +1,15 @@
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CoffeeShopUI {
-    private VBox root;
-    private Scene scene;
-    private ListView<String> menuListView;
-    private ListView<String> orderListView;
-    private Label totalPriceLabel;
-    private ObservableList<String> orderItems;
+public class CoffeeShopUI extends JFrame {
+    private JList<String> menuList;
+    private DefaultListModel<String> menuListModel;
+    private JList<String> orderList;
+    private DefaultListModel<String> orderListModel;
+    private JLabel totalPriceLabel;
     private Menu menu;
     private OrderProcessor orderProcessor;
 
@@ -21,109 +17,111 @@ public class CoffeeShopUI {
         this.menu = menu;
         this.orderProcessor = orderProcessor;
 
-        root = new VBox(10);
-        root.setPadding(new Insets(10));
+        setTitle("Coffee Shop Simulator");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        Label menuLabel = new Label("Menu");
-        menuListView = new ListView<>();
-        orderListView = new ListView<>();
-        orderItems = FXCollections.observableArrayList();
-        orderListView.setItems(orderItems);
-
+        // 左侧菜单列表
+        menuListModel = new DefaultListModel<>();
+        menuList = new JList<>(menuListModel);
         loadMenu();
 
-        Button addButton = new Button("Add to Order");
-        addButton.setOnAction(e -> addItemToOrder());
+        // 右侧订单列表
+        orderListModel = new DefaultListModel<>();
+        orderList = new JList<>(orderListModel);
 
-        Label orderLabel = new Label("Current Order");
-        Button submitOrderButton = new Button("Submit Order");
-        submitOrderButton.setOnAction(e -> submitOrder());
+        // 按钮
+        JButton addButton = new JButton("Add to Order");
+        addButton.addActionListener(e -> addItemToOrder());
 
-        totalPriceLabel = new Label("Total Price: $0.00");
+        JButton submitButton = new JButton("Submit Order");
+        submitButton.addActionListener(e -> submitOrder());
 
-        Button reportButton = new Button("Generate Report");
-        reportButton.setOnAction(e -> generateReport());
+        JButton reportButton = new JButton("Generate Report");
+        reportButton.addActionListener(e -> generateReport());
 
-        HBox buttonBox = new HBox(10, addButton, submitOrderButton, reportButton);
-        buttonBox.setPadding(new Insets(5));
+        totalPriceLabel = new JLabel("Total Price: $0.00");
 
-        root.getChildren().addAll(menuLabel, menuListView, buttonBox, orderLabel, orderListView, totalPriceLabel);
+        // 布局
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(new JLabel("Menu"), BorderLayout.NORTH);
+        leftPanel.add(new JScrollPane(menuList), BorderLayout.CENTER);
 
-        // 创建 JavaFX 场景
-        scene = new Scene(root, 800, 600);
-    }
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(new JLabel("Current Order"), BorderLayout.NORTH);
+        rightPanel.add(new JScrollPane(orderList), BorderLayout.CENTER);
+        rightPanel.add(totalPriceLabel, BorderLayout.SOUTH);
 
-    public Scene getScene() {
-        return scene;
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addButton);
+        buttonPanel.add(submitButton);
+        buttonPanel.add(reportButton);
+
+        add(leftPanel, BorderLayout.WEST);
+        add(rightPanel, BorderLayout.EAST);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        setVisible(true);
     }
 
     private void loadMenu() {
         for (Item item : menu.getItemList()) {
-            menuListView.getItems().add(item.getDescription() + " - $" + item.getCost());
+            menuListModel.addElement(item.getDescription() + " - $" + item.getCost());
         }
     }
 
     private void addItemToOrder() {
-        String selectedItem = menuListView.getSelectionModel().getSelectedItem();
+        String selectedItem = menuList.getSelectedValue();
         if (selectedItem != null) {
-            orderItems.add(selectedItem);
+            orderListModel.addElement(selectedItem);
         }
     }
 
     private void submitOrder() {
-        if (orderItems.isEmpty()) {
-            showError("No items selected!");
+        if (orderListModel.isEmpty()) {
+            showMessage("No items selected!", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         double total = calculateTotalPrice();
         totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
 
-        orderProcessor.getList().addOrder(new Order("O" + System.currentTimeMillis(), "Guest", "Now", convertToItems(orderItems)));
+        orderProcessor.getList().addOrder(new Order("O" + System.currentTimeMillis(), "Guest", "Now", convertToItems()));
 
-        orderItems.clear();
+        orderListModel.clear();
     }
 
     private double calculateTotalPrice() {
         double total = 0;
-        for (String item : orderItems) {
-            String[] parts = item.split(" - \\$");
+        for (int i = 0; i < orderListModel.getSize(); i++) {
+            String itemText = orderListModel.get(i);
+            String[] parts = itemText.split(" - \\$");
             double price = Double.parseDouble(parts[1]);
             total += price;
         }
         return total;
     }
 
-
-
-    private List<Item> convertToItems(List<String> itemNames) {
+    private List<Item> convertToItems() {
         return menu.getItemList().stream()
-                .filter(item -> itemNames.contains(item.getDescription() + " - $" + item.getCost()))
-                .collect(Collectors.toList()); // ✅ 兼容 Java 8+ 的写法
+                .filter(item -> {
+                    for (int i = 0; i < orderListModel.getSize(); i++) {
+                        if (orderListModel.get(i).contains(item.getDescription())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
-
 
     private void generateReport() {
         orderProcessor.getList().generateLog();
-        showInfo("Order report saved to 'order_log.txt'.");
+        showMessage("Order report saved to 'order_log.txt'.", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showInfo(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    public void onExit() {
-        System.out.println("Application closing...");
-        orderProcessor.getList().generateLog();
+    private void showMessage(String message, int messageType) {
+        JOptionPane.showMessageDialog(this, message, "Message", messageType);
     }
 }
