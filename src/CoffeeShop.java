@@ -1,25 +1,32 @@
-public class CoffeeShop {
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-	
+public class CoffeeShop extends Application {
 	public static void main(String[] args) {
-		
 		System.out.println("Welcome to our coffee shop");
-		
-		// initialize item list
-		Menu menu = new Menu();
-		menu.loadMenuFromFile("menu.txt");
-		
-		// initialize order list
-		OrderList orderList = new OrderList();
-		orderList.loadOrderListFromFile("orders.txt");
-		
-		OrderProcessor orderProcessor = new OrderProcessor(orderList);
-		
-		
-		// initialize UI
-		UI ui = new UI(menu,orderProcessor);
-		ui.onExit();
-		
+		launch(args);
 	}
 
+	@Override
+	public void start(Stage primaryStage) {
+		// 初始化菜单
+		Menu menu = new Menu();
+		menu.loadMenuFromFile("menu.txt");
+
+		// 初始化订单列表
+		OrderList orderList = new OrderList(menu);
+		orderList.loadOrderListFromFile("orders.txt");
+
+		// 订单处理器
+		OrderProcessor orderProcessor = new OrderProcessor(orderList);
+
+		// 启动 UI
+		CoffeeShopUI ui = new CoffeeShopUI(menu, orderProcessor);
+		primaryStage.setScene(ui.getScene());
+		primaryStage.setTitle("Coffee Shop Simulator");
+		primaryStage.show();
+
+		// 退出时触发 onExit（如果 onExit() 需要执行一些操作）
+		primaryStage.setOnCloseRequest(event -> ui.onExit());
+	}
 }
