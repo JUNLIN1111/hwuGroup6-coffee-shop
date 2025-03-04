@@ -1,5 +1,3 @@
-
-
 import java.util.List;
 
 public class Order {
@@ -34,4 +32,13 @@ public class Order {
     public String getCustomerId() { return customerId; }
     public String getTimeStamp() { return timeStamp; }
     public List<Item> getItemList() { return itemList; }
+
+    // ✅ 添加 `calculateTotalCost()` 只计算商品原始总价
+    public double calculateTotalCost() {
+        double totalCost = 0;
+        for (Item item : itemList) {
+            totalCost += item.getCost();
+        }
+        return totalCost;
+    }
 }
