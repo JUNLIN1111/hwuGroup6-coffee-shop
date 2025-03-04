@@ -4,7 +4,9 @@ import java.awt.event.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CoffeeShopUI extends JFrame {
@@ -90,10 +92,19 @@ public class CoffeeShopUI extends JFrame {
         double total = calculateTotalPrice();
         totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
 
-        orderProcessor.getList().addOrder(new Order("O" + System.currentTimeMillis(), "Guest", "Now", convertToItems()));
+        // ✅ 生成新的订单 ID
+        String newOrderId = "O" + (orderProcessor.getList().getOrderList().size() + 1);
+        Order newOrder = new Order(newOrderId, "Guest", "Now", convertToItems());
+
+        // ✅ 添加到 OrderList
+        orderProcessor.getList().addOrder(newOrder);
+
+        // ✅ 订单写入 `orders.txt`
+        orderProcessor.getList().saveOrdersToFile("orders.txt");
 
         orderListModel.clear();
     }
+
 
     private double calculateTotalPrice() {
         double total = 0;
@@ -129,59 +140,61 @@ public class CoffeeShopUI extends JFrame {
     private void showMessage(String message, int messageType) {
         JOptionPane.showMessageDialog(this, message, "Message", messageType);
     }
-    
-    
+
     private void generateFinalReport() {
-    	StringBuilder finalreport = new StringBuilder();
-		
-		System.out.println("Generating final report...");
-				
-    	// generate all items in menu.
-    	finalreport.append("======= Final Report =======\n\n");
-    	// list of all items in menu.
-    	List<Item> itemList = menu.getItemList();
-    	// list of all orders.
-    	List<Order> orderList = orderProcessor.getList().getOrderList();
-    	
-    	// record how many times each items of ordered.
-    	int[] numberOfOrders = new int[itemList.size()];
-    	
-    	Arrays.fill(numberOfOrders,0);
-    	
-    	double finalCost = 0;
-    	for (Order order: orderList) {
-    		for (Item item: order.getItemList()) {
-    			numberOfOrders[menu.indexOf(item)]++;
-    		}
-    		finalCost += order.calculateTotalCost();
-    	}
-    	
-    	
-    	finalreport.append(String.format("%-6s %-20s %-15s %11s %23s%n",
-    	        "Code", "Name", "Category", "Price", "Number of Orders") );
-    	finalreport.append("------------------------------"
-    			+ "--------------------------------------------------\n");
-    	int i = 0;
-    	for (Item item: itemList){
-    		finalreport.append(String.format("%-6s %-20s %-15s %10s %15s%n",
-    				item.getId(), item.getDescription(), item.getDescription(),
-    				item.getCost(), numberOfOrders[i++]) );
-    	}
-    	finalreport.append("------------------------------"
-    			+ "--------------------------------------------------\n\n");
-    	
-    	finalreport.append("Total income: " + finalCost);
-    	
+        StringBuilder finalReport = new StringBuilder();
+        System.out.println("Generating final report...");
 
-    	String report = finalreport.toString();
+        finalReport.append("======= Final Report =======\n\n");
 
-//    	System.out.println("Current working directory: " + System.getProperty("user.dir"));
+        // ✅ 重新加载 `orders.txt`，确保新订单也会被统计
+        orderProcessor.getList().loadOrderListFromFile("orders.txt");
 
-    	try (FileWriter writer = new FileWriter("finalReport.txt")){
-    		writer.write(report);
-    	} catch (IOException e) {
-    		System.out.println("Error occurred while writing file: "+e.getMessage());
-    	}
+        // 获取菜单和所有订单
+        List<Item> itemList = menu.getItemList();
+        List<Order> orderList = orderProcessor.getList().getOrderList();
+
+        // 统计每个商品的订单数量
+        Map<String, Integer> itemOrderCount = new HashMap<>();
+        double totalIncome = 0;
+
+        // 初始化计数器（所有商品初始销量为 0）
+        for (Item item : itemList) {
+            itemOrderCount.put(item.getId(), 0);
+        }
+
+        // 遍历所有订单，统计每个商品的销售数量
+        for (Order order : orderList) {
+            for (Item item : order.getItemList()) {
+                itemOrderCount.put(item.getId(), itemOrderCount.get(item.getId()) + 1);
+                totalIncome += item.getCost();
+            }
+        }
+
+        // 生成表头
+        finalReport.append(String.format("%-6s %-20s %-15s %11s %23s%n",
+                "Code", "Name", "Category", "Price", "Number of Orders"));
+        finalReport.append("--------------------------------------------------------------------------------\n");
+
+        // 遍历菜单，打印每个商品的统计信息
+        for (Item item : itemList) {
+            int count = itemOrderCount.get(item.getId()); // 获取订单数量
+            finalReport.append(String.format("%-6s %-20s %-15s %10.2f %15d%n",
+                    item.getId(), item.getDescription(), item.getCategory(),
+                    item.getCost(), count));
+        }
+
+        finalReport.append("--------------------------------------------------------------------------------\n\n");
+        finalReport.append(String.format("Total income: %.2f%n", totalIncome));
+
+        // 写入文件
+        try (FileWriter writer = new FileWriter("finalReport.txt")) {
+            writer.write(finalReport.toString());
+        } catch (IOException e) {
+            System.out.println("Error occurred while writing file: " + e.getMessage());
+        }
+
+        System.out.println("Final report successfully generated.");
     }
-	
+
 }

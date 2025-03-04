@@ -166,6 +166,20 @@ class OrderList {
 			System.out.println("Error generating log: " + e.getMessage());
 		}
 	}
+
+	public void saveOrdersToFile(String filePath) {
+		try (FileWriter writer = new FileWriter(filePath, true)) { // ✅ 使用 `true` 追加订单
+			for (Order order : orders) {
+				for (Item item : order.getItemList()) {
+					writer.write(order.getOrderId() + "," + order.getCustomerId() + "," +
+							order.getTimeStamp() + "," + item.getId() + "\n");
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("Error writing orders to file: " + e.getMessage());
+		}
+	}
+
 }
 
  
