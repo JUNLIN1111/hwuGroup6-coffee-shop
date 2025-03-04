@@ -1,11 +1,13 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class CoffeeShopUI extends JFrame {
     private JList<String> menuList;
@@ -78,7 +80,13 @@ public class CoffeeShopUI extends JFrame {
         String selectedItem = menuList.getSelectedValue();
         if (selectedItem != null) {
             orderListModel.addElement(selectedItem);
+            updateTotalPrice();
         }
+    }
+
+    private void updateTotalPrice() {
+        double total = calculateTotalPrice();
+        totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
     }
 
     private void submitOrder() {
@@ -87,15 +95,11 @@ public class CoffeeShopUI extends JFrame {
             return;
         }
 
-        double total = calculateTotalPrice();
+        Order order = new Order("O" + System.currentTimeMillis(), "Guest", "Now", convertToItems());
+        orderProcessor.getList().addOrder(order);
+
+        double total = orderProcessor.calculateOrderTotal(order);
         totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
-
-        // ✅ 生成新的订单 ID
-        String newOrderId = "O" + (orderProcessor.getList().getOrderList().size() + 1);
-        Order newOrder = new Order(newOrderId, "Guest", "Now", convertToItems());
-
-        // ✅ 仅添加到内存中的 OrderList，不写入文件
-        orderProcessor.getList().addOrder(newOrder);
 
         orderListModel.clear();
     }
@@ -114,11 +118,9 @@ public class CoffeeShopUI extends JFrame {
 
     private List<Item> convertToItems() {
         List<Item> itemList = new ArrayList<>();
-
-        // 遍历 orderListModel（用户选择的订单）
         for (int i = 0; i < orderListModel.getSize(); i++) {
-            String selectedItem = orderListModel.get(i); // 获取选中的菜单项文本
-            String itemName = selectedItem.split(" - \\$")[0]; // 解析出商品名称
+            String selectedItem = orderListModel.get(i);
+            String itemName = selectedItem.split(" - \\$")[0];
 
             // 在菜单中找到对应的 Item
             Item menuItem = menu.getItemList().stream()
@@ -127,22 +129,10 @@ public class CoffeeShopUI extends JFrame {
                     .orElse(null);
 
             if (menuItem != null) {
-                itemList.add(menuItem); // 将商品添加到订单（按次数重复）
+                itemList.add(menuItem);
             }
         }
         return itemList;
-    }
-
-
-    private void generateReport() {
-        String reportFilePath = "finalReport.txt";
-        orderProcessor.generateFinalReport(reportFilePath);
-        showMessage("Order report saved to '" + reportFilePath + "'.", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-
-    private void showMessage(String message, int messageType) {
-        JOptionPane.showMessageDialog(this, message, "Message", messageType);
     }
 
     private void generateFinalReport() {
@@ -151,26 +141,18 @@ public class CoffeeShopUI extends JFrame {
 
         finalReport.append("======= Final Report =======\n\n");
 
-        // ✅ 先加载 `orders.txt`，获取历史订单
-        OrderList tempOrderList = orderProcessor.getList();
-
-        // ✅ 添加当前会话中的订单（但不写入文件）
-//        tempOrderList.getOrderList().addAll(orderProcessor.getList().getOrderList());
-
-        // 获取菜单和所有订单
+        // ✅ 直接获取 OrderList 里的订单
+        List<Order> orderList = orderProcessor.getList().getOrderList();
         List<Item> itemList = menu.getItemList();
-        List<Order> orderList = tempOrderList.getOrderList(); // ✅ 包含所有订单（历史订单 + 当前订单）
 
         // 统计每个商品的订单数量
         Map<String, Integer> itemOrderCount = new HashMap<>();
         double totalIncome = 0;
 
-        // 初始化计数器（所有商品初始销量为 0）
         for (Item item : itemList) {
             itemOrderCount.put(item.getId(), 0);
         }
 
-        // 遍历所有订单，统计每个商品的销售数量
         for (Order order : orderList) {
             for (Item item : order.getItemList()) {
                 itemOrderCount.put(item.getId(), itemOrderCount.get(item.getId()) + 1);
@@ -178,14 +160,12 @@ public class CoffeeShopUI extends JFrame {
             }
         }
 
-        // 生成表头
         finalReport.append(String.format("%-6s %-20s %-15s %11s %23s%n",
                 "Code", "Name", "Category", "Price", "Number of Orders"));
         finalReport.append("--------------------------------------------------------------------------------\n");
 
-        // 遍历菜单，打印每个商品的统计信息
         for (Item item : itemList) {
-            int count = itemOrderCount.get(item.getId()); // 获取订单数量
+            int count = itemOrderCount.get(item.getId());
             finalReport.append(String.format("%-6s %-20s %-15s %10.2f %15d%n",
                     item.getId(), item.getDescription(), item.getCategory(),
                     item.getCost(), count));
@@ -194,7 +174,6 @@ public class CoffeeShopUI extends JFrame {
         finalReport.append("--------------------------------------------------------------------------------\n\n");
         finalReport.append(String.format("Total income: %.2f%n", totalIncome));
 
-        // ✅ 仅写入 `finalReport.txt`，不影响 `orders.txt`
         try (FileWriter writer = new FileWriter("finalReport.txt")) {
             writer.write(finalReport.toString());
         } catch (IOException e) {
@@ -204,5 +183,8 @@ public class CoffeeShopUI extends JFrame {
         System.out.println("Final report successfully generated.");
     }
 
-
+    private void showMessage(String message, int messageType) {
+        JOptionPane.showMessageDialog(this, message, "Message", messageType);
+    }
 }
+
