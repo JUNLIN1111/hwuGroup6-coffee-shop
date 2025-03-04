@@ -40,8 +40,14 @@ public class Menu {
 						String category = parts[2];
 						double cost = Double.parseDouble(parts[3]);
 						
-						Item item = new Item(id, description, category, cost);
-						items.add(item);
+						Item item;
+						try {
+							item = new Item(id, description, category, cost);
+							items.add(item);
+						} catch (Itemexception e) {
+							e.printStackTrace();
+						}
+						
 					} catch (NumberFormatException e) {
 						System.out.println("Error: Invalid price format - " + line);
 					}
