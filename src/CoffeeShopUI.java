@@ -96,11 +96,8 @@ public class CoffeeShopUI extends JFrame {
         String newOrderId = "O" + (orderProcessor.getList().getOrderList().size() + 1);
         Order newOrder = new Order(newOrderId, "Guest", "Now", convertToItems());
 
-        // ✅ 添加到 OrderList
+        // ✅ 仅添加到内存中的 OrderList，不写入文件
         orderProcessor.getList().addOrder(newOrder);
-
-        // ✅ 订单写入 `orders.txt`
-        orderProcessor.getList().saveOrdersToFile("orders.txt");
 
         orderListModel.clear();
     }
@@ -147,12 +144,16 @@ public class CoffeeShopUI extends JFrame {
 
         finalReport.append("======= Final Report =======\n\n");
 
-        // ✅ 重新加载 `orders.txt`，确保新订单也会被统计
-        orderProcessor.getList().loadOrderListFromFile("orders.txt");
+        // ✅ 先加载 `orders.txt`，获取历史订单
+        OrderList tempOrderList = new OrderList(menu);
+        tempOrderList.loadOrderListFromFile("orders.txt");
+
+        // ✅ 添加当前会话中的订单（但不写入文件）
+        tempOrderList.getOrderList().addAll(orderProcessor.getList().getOrderList());
 
         // 获取菜单和所有订单
         List<Item> itemList = menu.getItemList();
-        List<Order> orderList = orderProcessor.getList().getOrderList();
+        List<Order> orderList = tempOrderList.getOrderList(); // ✅ 包含所有订单（历史订单 + 当前订单）
 
         // 统计每个商品的订单数量
         Map<String, Integer> itemOrderCount = new HashMap<>();
@@ -187,7 +188,7 @@ public class CoffeeShopUI extends JFrame {
         finalReport.append("--------------------------------------------------------------------------------\n\n");
         finalReport.append(String.format("Total income: %.2f%n", totalIncome));
 
-        // 写入文件
+        // ✅ 仅写入 `finalReport.txt`，不影响 `orders.txt`
         try (FileWriter writer = new FileWriter("finalReport.txt")) {
             writer.write(finalReport.toString());
         } catch (IOException e) {
@@ -196,5 +197,6 @@ public class CoffeeShopUI extends JFrame {
 
         System.out.println("Final report successfully generated.");
     }
+
 
 }
