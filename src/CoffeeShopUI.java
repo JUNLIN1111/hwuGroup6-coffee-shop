@@ -3,10 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CoffeeShopUI extends JFrame {
@@ -115,17 +113,26 @@ public class CoffeeShopUI extends JFrame {
     }
 
     private List<Item> convertToItems() {
-        return menu.getItemList().stream()
-                .filter(item -> {
-                    for (int i = 0; i < orderListModel.getSize(); i++) {
-                        if (orderListModel.get(i).contains(item.getDescription())) {
-                            return true;
-                        }
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
+        List<Item> itemList = new ArrayList<>();
+
+        // 遍历 orderListModel（用户选择的订单）
+        for (int i = 0; i < orderListModel.getSize(); i++) {
+            String selectedItem = orderListModel.get(i); // 获取选中的菜单项文本
+            String itemName = selectedItem.split(" - \\$")[0]; // 解析出商品名称
+
+            // 在菜单中找到对应的 Item
+            Item menuItem = menu.getItemList().stream()
+                    .filter(item -> item.getDescription().equals(itemName))
+                    .findFirst()
+                    .orElse(null);
+
+            if (menuItem != null) {
+                itemList.add(menuItem); // 将商品添加到订单（按次数重复）
+            }
+        }
+        return itemList;
     }
+
 
     private void generateReport() {
         String reportFilePath = "finalReport.txt";
@@ -145,11 +152,10 @@ public class CoffeeShopUI extends JFrame {
         finalReport.append("======= Final Report =======\n\n");
 
         // ✅ 先加载 `orders.txt`，获取历史订单
-        OrderList tempOrderList = new OrderList(menu);
-        tempOrderList.loadOrderListFromFile("orders.txt");
+        OrderList tempOrderList = orderProcessor.getList();
 
         // ✅ 添加当前会话中的订单（但不写入文件）
-        tempOrderList.getOrderList().addAll(orderProcessor.getList().getOrderList());
+//        tempOrderList.getOrderList().addAll(orderProcessor.getList().getOrderList());
 
         // 获取菜单和所有订单
         List<Item> itemList = menu.getItemList();
