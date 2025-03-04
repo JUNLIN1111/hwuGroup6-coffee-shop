@@ -6,9 +6,9 @@ public class Order {
     private String timeStamp;
     private List<Item> itemList;
 
-    public Order(String orderId, String customerId, String timeStamp, List<Item> itemList) {
+    public Order(String orderId, String customerId, String timeStamp, List<Item> itemList) throws InvalidOrderException {
         if (orderId == null || orderId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Order ID cannot be null or empty.");
+            throw new InvalidOrderIdException("Order ID cannot be null or empty.");
         }
         this.orderId = orderId.trim();
 
@@ -18,12 +18,12 @@ public class Order {
         this.customerId = customerId.trim();
 
         if (timeStamp == null || timeStamp.trim().isEmpty()) {
-            throw new IllegalArgumentException("Timestamp cannot be null or empty.");
+            throw new InvalidOrderTimeStampException("Timestamp cannot be null or empty.");
         }
         this.timeStamp = timeStamp.trim();
 
         if (itemList == null || itemList.isEmpty()) {
-            throw new IllegalArgumentException("Order must contain at least one item.");
+            throw new IllegalitemListException("Order must contain at least one item.");
         }
         this.itemList = itemList;
     }
@@ -33,7 +33,7 @@ public class Order {
     public String getTimeStamp() { return timeStamp; }
     public List<Item> getItemList() { return itemList; }
 
-    // ✅ 添加 `calculateTotalCost()` 只计算商品原始总价
+    
     public double calculateTotalCost() {
         double totalCost = 0;
         for (Item item : itemList) {
