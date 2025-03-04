@@ -5,18 +5,23 @@ public class CoffeeShop {
     public static void main(String[] args) {
         System.out.println("Welcome to our coffee shop");
 
-        // 初始化菜单
+        // new Menu
         Menu menu = new Menu();
         menu.loadMenuFromFile("menu.txt");
 
-        // 初始化订单列表
+        // new Orderlist
         OrderList orderList = new OrderList(menu);
-        orderList.loadOrderListFromFile("orders.txt");
+        try {
+			orderList.loadOrderListFromFile("orders.txt");
+		} catch (InvalidOrderException e) {
+			
+			e.printStackTrace();
+		}
 
-        // 订单处理器
+        //orderProcessor
         OrderProcessor orderProcessor = new OrderProcessor(orderList);
 
-        // 启动 UI
+        
         SwingUtilities.invokeLater(() -> new CoffeeShopUI(menu, orderProcessor));
     }
 }
