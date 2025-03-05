@@ -8,7 +8,7 @@ public class OrderTest {
     private final OrderProcessor orderProcessor = new OrderProcessor(new OrderList(new Menu()));
 
     @Test
-    public void testOrderCreation() {
+    public void testOrderCreation() throws Itemexception, InvalidOrderException {
         Item item1 = new Item("C001", "Americano", "Coffee", 25.0);
         Item item2 = new Item("C002", "Latte", "Coffee", 30.0);
         List<Item> items = Arrays.asList(item1, item2);
@@ -22,7 +22,7 @@ public class OrderTest {
     }
 
     @Test
-    public void testCalculateTotalCostWithDessertAndCoffeeOrTea() {
+    public void testCalculateTotalCostWithDessertAndCoffeeOrTea() throws Itemexception, InvalidOrderException {
         Item item1 = new Item("D001", "Chocolate Cake", "Dessert", 35.0);
         Item item2 = new Item("C002", "Latte", "Coffee", 30.0);
         List<Item> items = Arrays.asList(item1, item2);
@@ -34,7 +34,7 @@ public class OrderTest {
     }
 
     @Test
-    public void testCalculateTotalCostWithMultipleItems() {
+    public void testCalculateTotalCostWithMultipleItems() throws Itemexception, InvalidOrderException {
         Item item1 = new Item("C001", "Americano", "Coffee", 25.0);
         Item item2 = new Item("C002", "Latte", "Coffee", 30.0);
         Item item3 = new Item("C003", "Cappuccino", "Coffee", 30.0);
@@ -49,7 +49,7 @@ public class OrderTest {
     }
 
     @Test
-    public void testCalculateTotalCostWithHighAmount() {
+    public void testCalculateTotalCostWithHighAmount() throws Itemexception, InvalidOrderException {
         Item item1 = new Item("D001", "Chocolate Cake", "Dessert", 35.0);
         Item item2 = new Item("C003", "Cappuccino", "Coffee", 30.0);
         Item item3 = new Item("D002", "Tiramisu", "Dessert", 35.0);
@@ -62,7 +62,7 @@ public class OrderTest {
     }
 
     @Test
-    public void testCalculateTotalCostWithExactly100() {
+    public void testCalculateTotalCostWithExactly100() throws Itemexception, InvalidOrderException {
         Item item1 = new Item("C001", "Americano", "Coffee", 50.0);
         Item item2 = new Item("C002", "Latte", "Coffee", 50.0);
         List<Item> items = Arrays.asList(item1, item2);
@@ -74,7 +74,7 @@ public class OrderTest {
     }
 
     @Test
-    public void testCalculateTotalCostWithMultipleDiscounts() {
+    public void testCalculateTotalCostWithMultipleDiscounts() throws Itemexception, InvalidOrderException {
         Item item1 = new Item("D002", "Tiramisu", "Dessert", 40.0);
         Item item2 = new Item("C002", "Latte", "Coffee", 30.0);
         Item item3 = new Item("T001", "Black Tea", "Tea", 20.0);
