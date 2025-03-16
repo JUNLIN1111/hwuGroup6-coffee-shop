@@ -42,16 +42,16 @@ public class Item {
     private void setPreparationTimeByCategory() {
         switch (category.toLowerCase()) {
             case "dessert":
-                this.preparationTime = 0.5;
+                this.preparationTime = 500;
                 break;
             case "tea":
-                this.preparationTime = 1.0;
+                this.preparationTime = 1000;
                 break;
             case "coffee":
-                this.preparationTime = 1.5;
+                this.preparationTime = 1500;
                 break;
             default:
-                this.preparationTime = 1.0; 
+                this.preparationTime = 1000; 
         }
     }
 
