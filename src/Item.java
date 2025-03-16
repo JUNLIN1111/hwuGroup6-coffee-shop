@@ -34,6 +34,9 @@ public class Item {
             throw new IllegalCostException("Cost cannot be negative 0.");
         }
         this.cost = cost;
+        
+     // Set preparation time based on category
+        setPreparationTimeByCategory();
     }
     
     private void setPreparationTimeByCategory() {
@@ -72,8 +75,6 @@ public class Item {
         return cost;
     }
     
-    public double getNumber() {
+    public int getNumber() {
         return number;
     }
-    
-}
