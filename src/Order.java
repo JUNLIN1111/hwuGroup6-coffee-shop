@@ -42,9 +42,9 @@ public class Order {
         return totalCost;
     }
 
-    // add time calculate for each order
-    public double calculateTotalTime() {
-    	double time = 0;
+     // add time calculate for each order
+    public int calculateTotalTime() {
+    	int time = 0;
     	for (Item item : itemList) {
             time += item.getPreparationTime();
         }
