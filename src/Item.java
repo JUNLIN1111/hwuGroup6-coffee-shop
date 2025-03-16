@@ -3,8 +3,9 @@ public class Item {
     private String description;
     private String category;
     private double cost;
-    private static final int MAX_DESCRIPTION_LENGTH = 50;// 鏈�澶ф弿杩伴暱搴�
+    private static final int MAX_DESCRIPTION_LENGTH = 50; //max description
     private int number;
+    private double preparationTime; // new attribute to describe preparationTime
     
     public Item(String id, String description, String category, double cost) throws Itemexception {
         // Validate id
@@ -34,6 +35,22 @@ public class Item {
         }
         this.cost = cost;
     }
+    
+    private void setPreparationTimeByCategory() {
+        switch (category.toLowerCase()) {
+            case "dessert":
+                this.preparationTime = 0.5;
+                break;
+            case "tea":
+                this.preparationTime = 1.0;
+                break;
+            case "coffee":
+                this.preparationTime = 1.5;
+                break;
+            default:
+                this.preparationTime = 1.0; 
+        }
+    }
 
     public String getId() {
         return id;
@@ -45,6 +62,10 @@ public class Item {
 
     public String getCategory() {
         return category;
+    }
+    
+    public double getPreparationTime() {
+        return preparationTime;
     }
 
     public double getCost() {
