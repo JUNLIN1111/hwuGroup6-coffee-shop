@@ -14,14 +14,30 @@ public class CoffeeShop {
         try {
 			orderList.loadOrderListFromFile("orders.txt");
 		} catch (InvalidOrderException e) {
-			
+
 			e.printStackTrace();
 		}
 
         //orderProcessor
         OrderProcessor orderProcessor = new OrderProcessor(orderList);
 
-        
-        SwingUtilities.invokeLater(() -> new CoffeeShopUI(menu, orderProcessor));
+        ThreadedOrderProcessor threadedProcessor = new ThreadedOrderProcessor();
+
+        OrderThreadManager threadManager = new OrderThreadManager(threadedProcessor);
+
+        threadManager.startServers(2);
+
+        // 将已有订单放入线程队列进行处理
+        for (Order order : orderList.getOrderList()) {
+            threadedProcessor.addOrder(order);
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            new CoffeeShopUI(menu, orderProcessor, threadedProcessor);
+            ThreadMonitorUI.launch(threadedProcessor);
+        });
+
+
+        Runtime.getRuntime().addShutdownHook(new Thread(threadManager::stopServers));
     }
 }

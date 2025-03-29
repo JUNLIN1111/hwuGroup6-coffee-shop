@@ -16,10 +16,12 @@ public class CoffeeShopUI extends JFrame {
     private JLabel totalPriceLabel; // Label to display the total price
     private Menu menu; // Menu object containing menu items
     private OrderProcessor orderProcessor; // OrderProcessor to handle order processing
+    private ThreadedOrderProcessor threadedProcessor; // Processor for threaded execution
 
-    public CoffeeShopUI(Menu menu, OrderProcessor orderProcessor) {
+    public CoffeeShopUI(Menu menu, OrderProcessor orderProcessor, ThreadedOrderProcessor threadedProcessor) {
         this.menu = menu;
         this.orderProcessor = orderProcessor;
+        this.threadedProcessor = threadedProcessor;
 
         setTitle("Coffee Shop Simulator"); // Set the title of the window
         setSize(800, 600); // Set the size of the window
@@ -75,23 +77,20 @@ public class CoffeeShopUI extends JFrame {
     }
 
     private void loadMenu() {
-        // Load menu items from the Menu object into the menu list model
         for (Item item : menu.getItemList()) {
             menuListModel.addElement(item.getDescription() + " - $" + item.getCost());
         }
     }
 
     private void addItemToOrder() {
-        // Add the selected item from the menu to the order list
         String selectedItem = menuList.getSelectedValue();
         if (selectedItem != null) {
             orderListModel.addElement(selectedItem);
-            updateTotalPrice(); // Update the total price after adding an item
+            updateTotalPrice();
         }
     }
 
     private void updateTotalPrice() {
-        // Update the total price label based on the current order
         try {
             Order order = new Order("O" + System.currentTimeMillis(), "Guest", "Now", convertToItems());
             double total = orderProcessor.calculateOrderTotal(order);
@@ -102,7 +101,6 @@ public class CoffeeShopUI extends JFrame {
     }
 
     private void submitOrder() {
-        // Submit the current order
         if (orderListModel.isEmpty()) {
             showMessage("No items selected!", JOptionPane.WARNING_MESSAGE);
             return;
@@ -110,24 +108,23 @@ public class CoffeeShopUI extends JFrame {
         try {
             Order order = new Order("O" + System.currentTimeMillis(), "Guest", "Now", convertToItems());
             orderProcessor.getList().addOrder(order);
+            threadedProcessor.addOrder(order); // 添加到线程处理队列
 
             double total = orderProcessor.calculateOrderTotal(order);
             totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
 
-            orderListModel.clear(); // Clear the order list after submission
+            orderListModel.clear();
         } catch (InvalidOrderException e) {
             System.out.println(e.getMessage());
         }
     }
 
     private List<Item> convertToItems() {
-        // Convert the selected items in the order list to Item objects
         List<Item> itemList = new ArrayList<>();
         for (int i = 0; i < orderListModel.getSize(); i++) {
             String selectedItem = orderListModel.get(i);
-            String itemName = selectedItem.split(" - \\$")[0];
+            String itemName = selectedItem.split(" - \\$", 2)[0];
 
-            // Find the corresponding Item object from the menu
             Item menuItem = menu.getItemList().stream()
                     .filter(item -> item.getDescription().equals(itemName))
                     .findFirst()
@@ -141,17 +138,14 @@ public class CoffeeShopUI extends JFrame {
     }
 
     private void generateFinalReport() {
-        // Generate a final report of all orders
         StringBuilder finalReport = new StringBuilder();
         System.out.println("Generating final report...");
 
         finalReport.append("======= Final Report =======\n\n");
 
-        // Get all orders and menu items
         List<Order> orderList = orderProcessor.getList().getOrderList();
         List<Item> itemList = menu.getItemList();
 
-        // Record the number of times each item is ordered
         Map<String, Integer> itemOrderCount = new HashMap<>();
         double totalIncome = 0;
 
@@ -166,7 +160,6 @@ public class CoffeeShopUI extends JFrame {
             }
         }
 
-        // Format the report
         finalReport.append(String.format("%-6s %-20s %-15s %11s %23s%n",
                 "Code", "Name", "Category", "Price", "Number of Orders"));
         finalReport.append("--------------------------------------------------------------------------------\n");
@@ -181,7 +174,6 @@ public class CoffeeShopUI extends JFrame {
         finalReport.append("--------------------------------------------------------------------------------\n\n");
         finalReport.append(String.format("Total income: %.2f%n", totalIncome));
 
-        // Write the report to a file
         try (FileWriter writer = new FileWriter("finalReport.txt")) {
             writer.write(finalReport.toString());
         } catch (IOException e) {
@@ -192,7 +184,6 @@ public class CoffeeShopUI extends JFrame {
     }
 
     private void showMessage(String message, int messageType) {
-        // Show a message dialog with the specified message and type
         JOptionPane.showMessageDialog(this, message, "Message", messageType);
     }
 }

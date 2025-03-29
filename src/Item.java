@@ -6,14 +6,14 @@ public class Item {
     private static final int MAX_DESCRIPTION_LENGTH = 50; //max description
     private int number;
     private double preparationTime; // new attribute to describe preparationTime
-    
+
     public Item(String id, String description, String category, double cost) throws Itemexception {
         // Validate id
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalItemIdException("ID cannot be null or empty.");
         }
         this.id = id.trim();
-        
+
         // Validate description
         if (description == null || description.trim().isEmpty()) {
             throw new IllegalDescriptionException("Description cannot be null or empty.");
@@ -30,15 +30,15 @@ public class Item {
         this.category = category.trim();
 
         // Validate cost
-        if (cost <0) {
+        if (cost < 0) {
             throw new IllegalCostException("Cost cannot be negative 0.");
         }
         this.cost = cost;
-        
-     // Set preparation time based on category
+
+        // Set preparation time based on category
         setPreparationTimeByCategory();
     }
-    
+
     private void setPreparationTimeByCategory() {
         switch (category.toLowerCase()) {
             case "dessert":
@@ -51,7 +51,7 @@ public class Item {
                 this.preparationTime = 1500;
                 break;
             default:
-                this.preparationTime = 1000; 
+                this.preparationTime = 1000;
         }
     }
 
@@ -66,7 +66,7 @@ public class Item {
     public String getCategory() {
         return category;
     }
-    
+
     public double getPreparationTime() {
         return preparationTime;
     }
@@ -74,7 +74,8 @@ public class Item {
     public double getCost() {
         return cost;
     }
-    
+
     public int getNumber() {
         return number;
     }
+}
