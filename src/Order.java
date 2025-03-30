@@ -35,14 +35,44 @@ public class Order {
 
     
     public double calculateTotalCost() {
-        double totalCost = 0;
+        double total = 0;
         for (Item item : itemList) {
-            totalCost += item.getCost();
+            total += item.getCost();
+            
         }
-        return totalCost;
-    }
+     // 1. If the order contains at least 1 "Dessert" and 1 "Coffee" or "Tea", apply a 10% discount
+        boolean hasDessert = false;
+        boolean hasCoffeeOrTea = false;
 
-     // add time calculate for each order
+        for (Item item : itemList) {
+            if (item.getCategory().equalsIgnoreCase("Dessert")) {
+                hasDessert = true; // Check if the order contains a dessert
+            }
+            if (item.getCategory().equalsIgnoreCase("Coffee") || item.getCategory().equalsIgnoreCase("Tea")) {
+                hasCoffeeOrTea = true; // Check if the order contains coffee or tea
+            }
+        }
+        double totalDiscount = total; // Initialize the discounted total
+        if (hasDessert && hasCoffeeOrTea) {
+            totalDiscount = Math.min(total * 0.9, totalDiscount); // Apply a 10% discount
+        }
+
+        // 2. If the order contains at least 5 items, apply a 25% discount
+        if (itemList.size() >= 5) {
+            totalDiscount = Math.min(total * 0.75, totalDiscount); // Apply a 25% discount
+        }
+
+        // 3. If the total cost of the order is >= $100, apply a 20% discount
+        if (total >= 100) {
+            totalDiscount = Math.min(total * 0.8, totalDiscount); // Apply a 20% discount
+        }
+
+        // Return the final total cost after applying all applicable discounts
+     
+        return total;
+    }
+    
+    // add time calculate for each order
     public int calculateTotalTime() {
     	int time = 0;
     	for (Item item : itemList) {
