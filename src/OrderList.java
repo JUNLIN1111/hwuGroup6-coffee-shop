@@ -34,13 +34,12 @@ public class OrderList {
     
     // consumer method
     public synchronized Order getNextOrder() throws InterruptedException {
-        if(orders.size()>0) {
-        	Order order = orders.get(0);
-            notifyAll();
-            return order;
+        while (orders.isEmpty()) {
+            wait();
         }
-        return null;
+        return orders.remove(0);
     }
+
 
 
     /**

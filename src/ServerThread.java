@@ -1,10 +1,8 @@
 public class ServerThread implements Runnable {
     private final String serverName;
-    private final ThreadedOrderProcessor processor;
 
-    public ServerThread(String name, ThreadedOrderProcessor processor) {
+    public ServerThread(String name) {
         this.serverName = name;
-        this.processor = processor;
     }
 
     @Override
@@ -12,13 +10,14 @@ public class ServerThread implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 Order order = OrderList.getInstance().getNextOrder();
-                processOrder(order);
-                processor.finishOrder(serverName);
+                if (order != null) {
+                    processOrder(order);
+                }
             } catch (InterruptedException e) {
                 System.out.println(serverName + " shutting down.");
                 break;
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println(serverName + " error: " + e.getMessage());
                 break;
             }
         }

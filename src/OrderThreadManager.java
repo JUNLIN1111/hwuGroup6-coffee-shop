@@ -3,15 +3,13 @@ import java.util.List;
 
 public class OrderThreadManager {
     private final List<Thread> serverThreads = new ArrayList<>();
-    private final ThreadedOrderProcessor processor;
 
-    public OrderThreadManager(ThreadedOrderProcessor processor) {
-        this.processor = processor;
+    public OrderThreadManager() {
     }
 
     public void startServers(int count) {
         for (int i = 1; i <= count; i++) {
-            ServerThread task = new ServerThread("Server-" + i, processor);
+            ServerThread task = new ServerThread("Server-" + i);
             Thread thread = new Thread(task);
             thread.start();
             serverThreads.add(thread);
@@ -24,29 +22,16 @@ public class OrderThreadManager {
         }
     }
 
-    public void addOrdersWithTiming(List<Order> sortedOrders) {
-        new Thread(() -> {
-            if (sortedOrders.isEmpty()) return;
+    public void addOrders(List<Order> orders) {
+        for (Order order : orders) {
             try {
-                Order baseOrder = sortedOrders.get(0);
-                long baseTime = parseTimestamp(baseOrder.getTimeStamp());
-
-                for (Order order : sortedOrders) {
-                    long currentTime = parseTimestamp(order.getTimeStamp());
-                    long delay = currentTime - baseTime;
-                    if (delay > 0) Thread.sleep(delay);
-                    processor.addOrder(order);
-                    System.out.println("[Scheduled] Order added: " + order.getOrderId());
-                    baseTime = currentTime;
-                }
+                OrderList.getInstance().addOrder(order);
+                System.out.println("[Direct] Order added: " + order.getOrderId());
+            } catch (InvalidOrderException e) {
+                System.out.println("Error adding order: " + e.getMessage());
             } catch (InterruptedException e) {
-                System.out.println("[Scheduler] Interrupted");
+                throw new RuntimeException(e);
             }
-        }).start();
-    }
-
-    private long parseTimestamp(String ts) {
-        return java.time.LocalDateTime.parse(ts, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-                .atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+        }
     }
 }
