@@ -1,4 +1,4 @@
-public class ServerThread extends Thread {
+public class ServerThread implements Runnable {
     private final String serverName;
     private final ThreadedOrderProcessor processor;
 
@@ -9,7 +9,7 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 Order order = processor.takeOrder(serverName);
                 processOrder(order);
@@ -26,7 +26,7 @@ public class ServerThread extends Thread {
 
         int totalTime = 0;
         for (Item item : order.getItemList()) {
-            totalTime += item.getPreparationTime()*10; // 已是毫秒单位
+            totalTime += (int) (item.getPreparationTime() * 10); // ms
         }
         Thread.sleep(totalTime);
 
