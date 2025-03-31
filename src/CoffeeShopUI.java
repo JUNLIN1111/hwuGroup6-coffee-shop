@@ -116,6 +116,8 @@ public class CoffeeShopUI extends JFrame {
             orderListModel.clear();
         } catch (InvalidOrderException e) {
             System.out.println(e.getMessage());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

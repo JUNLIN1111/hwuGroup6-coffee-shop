@@ -11,11 +11,14 @@ public class ServerThread implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                Order order = processor.takeOrder(serverName);
+                Order order = OrderList.getInstance().getNextOrder();
                 processOrder(order);
                 processor.finishOrder(serverName);
             } catch (InterruptedException e) {
                 System.out.println(serverName + " shutting down.");
+                break;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
                 break;
             }
         }
