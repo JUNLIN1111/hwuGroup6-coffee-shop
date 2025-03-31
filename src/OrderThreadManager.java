@@ -22,16 +22,5 @@ public class OrderThreadManager {
         }
     }
 
-    public void addOrders(List<Order> orders) {
-        for (Order order : orders) {
-            try {
-                OrderList.getInstance().addOrder(order);
-                System.out.println("[Direct] Order added: " + order.getOrderId());
-            } catch (InvalidOrderException e) {
-                System.out.println("Error adding order: " + e.getMessage());
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+
 }

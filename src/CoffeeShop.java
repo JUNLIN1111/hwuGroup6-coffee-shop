@@ -15,7 +15,7 @@ public class CoffeeShop {
         final ThreadedOrderProcessor threadedProcessor = new ThreadedOrderProcessor();
         final OrderThreadManager threadManager = new OrderThreadManager();
 
-        threadManager.startServers(2);
+        threadManager.startServers(4);
 
         SwingUtilities.invokeLater(() -> {
             new CoffeeShopUI(orderProcessor, threadedProcessor);

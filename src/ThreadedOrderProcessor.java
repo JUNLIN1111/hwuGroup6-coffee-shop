@@ -3,6 +3,7 @@ import java.util.*;
 public class ThreadedOrderProcessor {
     private final Queue<Order> orderQueue = new LinkedList<>();
     private final Map<String, Order> activeOrders = new HashMap<>();
+    private Order order;
 
     public synchronized void addOrder(Order order) {
         orderQueue.offer(order);
@@ -13,7 +14,7 @@ public class ThreadedOrderProcessor {
         while (orderQueue.isEmpty()) {
             wait();
         }
-        Order order = orderQueue.poll();
+        order = orderQueue.poll();
         activeOrders.put(serverName, order);
         return order;
     }
@@ -29,4 +30,8 @@ public class ThreadedOrderProcessor {
     public synchronized Map<String, Order> getActiveOrders() {
         return new HashMap<>(activeOrders);
     }
+    public synchronized Order getOrder() {
+        return order;
+    }
+
 }
