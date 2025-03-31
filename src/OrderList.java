@@ -62,8 +62,6 @@ public class OrderList {
         Map<String, List<Item>> orderItemsMap = new LinkedHashMap<>();
         Map<String, String[]> orderInfoMap = new LinkedHashMap<>();
 
-
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -100,15 +98,36 @@ public class OrderList {
 
         // Clear existing orders and add new ones from the file
         orders.clear();
-        for (String orderId : orderItemsMap.keySet()) {
-            List<Item> itemList = orderItemsMap.get(orderId);
-            if (itemList.isEmpty()) {
-                System.out.println("Warning: Order " + orderId + " has no items.");
-                continue;  // **Skip if the order has no items**
-            }
 
-            String[] info = orderInfoMap.get(orderId);
-            orders.add(new Order(orderId, info[0], info[1], itemList));
-        }
+        addOrderByTime(orderItemsMap,orderInfoMap);
+    }
+    
+    private void addOrderByTime(Map<String, List<Item>> orderItemsMap, Map<String, String[]> orderInfoMap) {
+        new Thread(() -> {
+            for (String orderId : orderItemsMap.keySet()) {
+                List<Item> itemList = orderItemsMap.get(orderId);
+                if (itemList.isEmpty()) {
+                    System.out.println("Warning: Order " + orderId + " has no items.");
+                    continue;  // Skip if the order has no items
+                }
+
+                String[] info = orderInfoMap.get(orderId);
+                try {
+                    Order order = new Order(orderId, info[0], info[1], itemList);
+
+                    synchronized (orders) {
+                    	addOrder(order);
+                    	System.out.println("order added.");
+                    }
+
+                    Thread.sleep(1000); 
+                } catch (InvalidOrderException e) {
+                    System.out.println(e.getMessage());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupted status
+                    System.out.println("Thread was interrupted.");
+                }
+            }
+        }).start();
     }
 }
