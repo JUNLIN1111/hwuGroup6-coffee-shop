@@ -14,12 +14,10 @@ public class CoffeeShopUI extends JFrame {
     private JList<String> orderList; // List to display the current order
     private DefaultListModel<String> orderListModel; // Model for the order list
     private JLabel totalPriceLabel; // Label to display the total price
-    private Menu menu; // Menu object containing menu items
     private OrderProcessor orderProcessor; // OrderProcessor to handle order processing
     private ThreadedOrderProcessor threadedProcessor; // Processor for threaded execution
 
-    public CoffeeShopUI(Menu menu, OrderProcessor orderProcessor, ThreadedOrderProcessor threadedProcessor) {
-        this.menu = menu;
+    public CoffeeShopUI(OrderProcessor orderProcessor, ThreadedOrderProcessor threadedProcessor) {
         this.orderProcessor = orderProcessor;
         this.threadedProcessor = threadedProcessor;
 
@@ -77,7 +75,7 @@ public class CoffeeShopUI extends JFrame {
     }
 
     private void loadMenu() {
-        for (Item item : menu.getItemList()) {
+        for (Item item : Menu.getInstance().getItemList()) {
             menuListModel.addElement(item.getDescription() + " - $" + item.getCost());
         }
     }
@@ -127,7 +125,7 @@ public class CoffeeShopUI extends JFrame {
             String selectedItem = orderListModel.get(i);
             String itemName = selectedItem.split(" - \\$", 2)[0];
 
-            Item menuItem = menu.getItemList().stream()
+            Item menuItem = Menu.getInstance().getItemList().stream()
                     .filter(item -> item.getDescription().equals(itemName))
                     .findFirst()
                     .orElse(null);
@@ -146,7 +144,7 @@ public class CoffeeShopUI extends JFrame {
         finalReport.append("======= Final Report =======\n\n");
 
         List<Order> orderList = orderProcessor.getList().getOrderList();
-        List<Item> itemList = menu.getItemList();
+        List<Item> itemList = Menu.getInstance().getItemList();
 
         Map<String, Integer> itemOrderCount = new HashMap<>();
         double totalIncome = 0;

@@ -23,7 +23,7 @@ public class CoffeeShop {
         threadManager.addOrdersWithTiming(orderList.getOrderList());
 
         SwingUtilities.invokeLater(() -> {
-            new CoffeeShopUI(menu, orderProcessor, threadedProcessor);
+            new CoffeeShopUI(orderProcessor, threadedProcessor);
             ThreadMonitorUI.launch(threadedProcessor);
         });
 
