@@ -31,10 +31,7 @@ public class CoffeeShop {
 
         threadManager.startServers(2);
 
-        // 将已有订单放入线程队列进行处理
-        for (Order order : orderList.getOrderList()) {
-            threadedProcessor.addOrder(order);
-        }
+        threadManager.addOrdersWithTiming(orderList.getOrderList());
 
         SwingUtilities.invokeLater(() -> {
             new CoffeeShopUI(menu, orderProcessor, threadedProcessor);
