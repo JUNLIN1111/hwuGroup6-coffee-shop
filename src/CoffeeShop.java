@@ -17,10 +17,6 @@ public class CoffeeShop {
 
         threadManager.startServers(2);
 
-        // 灏嗗凡鏈夎鍗曟斁鍏ョ嚎绋嬮槦鍒楄繘琛屽鐞�
-        for (Order order : orderList.getOrderList()) {
-            threadedProcessor.addOrder(order);
-        }
 
         SwingUtilities.invokeLater(() -> {
             new CoffeeShopUI(menu, orderProcessor, threadedProcessor);
