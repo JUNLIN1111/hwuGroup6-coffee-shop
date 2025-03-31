@@ -10,7 +10,9 @@ public class OrderList {
     private final List<Order> orders = new ArrayList<Order>(); // List to store all orders
     private static final String FILE_PATH = "orders.txt";
     private static OrderList instance;
-    
+    private final Map<String, Order> activeOrders = new HashMap<>();
+
+
     private OrderList() throws InvalidOrderException {
     	loadOrderListFromFile(FILE_PATH);
     }
@@ -33,12 +35,23 @@ public class OrderList {
     }
     
     // consumer method
-    public synchronized Order getNextOrder() throws InterruptedException {
+    public synchronized Order getNextOrder(String serverName) throws InterruptedException {
         while (orders.isEmpty()) {
             wait();
         }
-        return orders.remove(0);
+        Order order = orders.remove(0);
+        activeOrders.put(serverName, order); // 记录当前服务员处理的订单
+        return order;
     }
+
+    public synchronized Map<String, Order> getActiveOrders() {
+        return new HashMap<>(activeOrders);
+    }
+
+    public synchronized void finishOrder(String serverName) {
+        activeOrders.remove(serverName);
+    }
+
 
 
 

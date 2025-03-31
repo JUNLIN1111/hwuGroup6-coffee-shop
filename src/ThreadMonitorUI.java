@@ -21,30 +21,30 @@ public class ThreadMonitorUI extends JFrame {
 		frame.setLayout(new GridBagLayout());
 
 //pendingArea = new JTextArea();
-//¹¹½¨µÚÒ»ÐÐµÈ´ý¶ÓÁÐ
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ÐµÈ´ï¿½ï¿½ï¿½ï¿½ï¿½
 		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.BOTH; // ×é¼þÌî³äÕû¸öµ¥Ôª¸ñ
-		gbc.insets = new Insets(5, 5, 5, 5); // Ìí¼Ó¼ä¾à
+		gbc.fill = GridBagConstraints.BOTH; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½
+		gbc.insets = new Insets(5, 5, 5, 5); // ï¿½ï¿½Ó¼ï¿½ï¿½
 		wait_queue = new JTextArea("Wating queue");
 		wait_queue.setText("None");
 		wait_queue.setName("Wating queue");
-		gbc.gridx = 0; // ÁÐË÷Òý
-		gbc.gridy = 0; // ÐÐË÷Òý
-		gbc.gridwidth = 4; // ¿ç 4 ÁÐ
+		gbc.gridx = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		gbc.gridy = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		gbc.gridwidth = 4; // ï¿½ï¿½ 4 ï¿½ï¿½
 		gbc.weightx = 1.0;
 		gbc.weighty = 0.6;
 		frame.add(new JScrollPane(wait_queue), gbc);
 
 //activeArea = new JTextArea();
 		info_sever = new JTextArea[4];
-		gbc.gridy = 1; // µÚ¶þÐÐ
-		gbc.gridwidth = 1; // Ã¿¸öÕ¼ 1 ÁÐ
+		gbc.gridy = 1; // ï¿½Ú¶ï¿½ï¿½ï¿½
+		gbc.gridwidth = 1; // Ã¿ï¿½ï¿½Õ¼ 1 ï¿½ï¿½
 		gbc.weighty = 0.4;
 		for (int i = 0; i < 4; i++) {
 			info_sever[i] = new JTextArea();
-			info_sever[i].setName("server" + (i + 1)); // ÉèÖÃÃû³Æ
-			info_sever[i].setText("free"); // ÉèÖÃ³õÊ¼ÎÄ±¾
-			gbc.gridx = i; // Ã¿¸öÎÄ±¾¿ò·ÅÔÚ²»Í¬µÄÁÐ
+			info_sever[i].setName("server" + (i + 1)); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			info_sever[i].setText("free"); // ï¿½ï¿½ï¿½Ã³ï¿½Ê¼ï¿½Ä±ï¿½
+			gbc.gridx = i; // Ã¿ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½Í¬ï¿½ï¿½ï¿½ï¿½
 			frame.add(new JScrollPane(info_sever[i]), gbc);
 		}
 		lastUpdated = new JLabel();
@@ -54,11 +54,17 @@ public class ThreadMonitorUI extends JFrame {
 	}
 
 	private void startRefreshing() {
-		Timer timer = new Timer(1000, e -> refreshDisplay());
+		Timer timer = new Timer(1000, e -> {
+            try {
+                refreshDisplay();
+            } catch (InvalidOrderException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 		timer.start();
 	}
 
-	private void refreshDisplay() {
+	private void refreshDisplay() throws InvalidOrderException {
 		List<Order> waitqueue;
 
 		try {
@@ -67,7 +73,8 @@ public class ThreadMonitorUI extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Map<String, Order> active = processor.getActiveOrders();
+		Map<String, Order> active = OrderList.getInstance().getActiveOrders();
+
 
 		StringBuilder pendingText = new StringBuilder("Waiting Queue:\n");
 		try {
