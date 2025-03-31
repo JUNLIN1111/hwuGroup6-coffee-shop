@@ -77,31 +77,11 @@ public class Menu {
 		}
 	}
 
-	private List<Item> getItemList() {
-		return Collections.unmodifiableList(items);
-	}
-
-	private Item findItemById(String id) {
+	public Item findItemById(String id) {
 		return items.stream()
 				   .filter(item -> item.getId().equals(id))
 				   .findFirst()
 				   .orElse(null);
 	}
 
-	private List<Item> findItemsByCategory(String category) {
-		return items.stream()
-				   .filter(item -> item.getCategory().equals(category))
-				   .collect(Collectors.toList());
-	}
-
-	private void addItem(Item item) {
-		if (item == null) {
-			throw new IllegalArgumentException("Item cannot be null");
-		}
-		// Check if ID already exists
-		if (findItemById(item.getId()) != null) {
-			throw new IllegalArgumentException("Item ID already exists: " + item.getId());
-		}
-		items.add(item);
-	}
 }

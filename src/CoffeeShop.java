@@ -5,22 +5,8 @@ public class CoffeeShop {
     public static void main(String[] args) {
         System.out.println("Welcome to our coffee shop");
 
-        // new Menu
-        Menu menu = new Menu();
-        menu.loadMenuFromFile("menu.txt");
-
         // new Orderlist
-        OrderList orderList = new OrderList(menu);
-        try {
-			orderList.loadOrderListFromFile("orders.txt");
-            System.out.println(orderList.getOrderList().size());
-            for (Order order : orderList.getOrderList()) {
-                System.out.println(order.getOrderId());
-            }
-		} catch (InvalidOrderException e) {
-
-			e.printStackTrace();
-		}
+        OrderList orderList = new OrderList();
 
         //orderProcessor
         OrderProcessor orderProcessor = new OrderProcessor(orderList);
@@ -31,7 +17,6 @@ public class CoffeeShop {
 
         threadManager.startServers(2);
 
-        threadManager.addOrdersWithTiming(orderList.getOrderList());
 
         SwingUtilities.invokeLater(() -> {
             new CoffeeShopUI(menu, orderProcessor, threadedProcessor);
