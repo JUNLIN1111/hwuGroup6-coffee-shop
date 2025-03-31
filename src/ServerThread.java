@@ -26,7 +26,7 @@ public class ServerThread extends Thread {
 
         int totalTime = 0;
         for (Item item : order.getItemList()) {
-            totalTime += item.getPreparationTime(); // 已是毫秒单位
+            totalTime += item.getPreparationTime()*10; // 已是毫秒单位
         }
         Thread.sleep(totalTime);
 

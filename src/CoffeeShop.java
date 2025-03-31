@@ -13,6 +13,10 @@ public class CoffeeShop {
         OrderList orderList = new OrderList(menu);
         try {
 			orderList.loadOrderListFromFile("orders.txt");
+            System.out.println(orderList.getOrderList().size());
+            for (Order order : orderList.getOrderList()) {
+                System.out.println(order.getOrderId());
+            }
 		} catch (InvalidOrderException e) {
 
 			e.printStackTrace();

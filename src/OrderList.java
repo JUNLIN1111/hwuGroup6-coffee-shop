@@ -60,8 +60,10 @@ public class OrderList {
         }
 
         // Maps to temporarily store order information and items
-        Map<String, List<Item>> orderItemsMap = new HashMap<>();
-        Map<String, String[]> orderInfoMap = new HashMap<>();
+        Map<String, List<Item>> orderItemsMap = new LinkedHashMap<>();
+        Map<String, String[]> orderInfoMap = new LinkedHashMap<>();
+
+
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;

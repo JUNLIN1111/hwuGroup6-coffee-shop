@@ -69,7 +69,7 @@ public class Order {
 
         // Return the final total cost after applying all applicable discounts
      
-        return total;
+        return totalDiscount;
     }
     
     // add time calculate for each order

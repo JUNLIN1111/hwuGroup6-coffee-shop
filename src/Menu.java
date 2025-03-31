@@ -8,13 +8,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Menu {
+
+	private static volatile Menu instance;
+	private static final String FILE_PATH = "menu.txt";
+
 	private List<Item> items;
 
-	public Menu() {
+	private Menu(){
 		items = new ArrayList<>();
+		loadMenuFromFile(FILE_PATH);
 	}
 
-	public void loadMenuFromFile(String filePath) {
+	public static Menu getInstance(){
+		if(instance == null){
+			synchronized (Menu.class){
+				if(instance == null){
+					instance = new Menu();
+				}
+			}
+		}
+		return instance;
+	}
+
+
+	private void loadMenuFromFile(String filePath) {
 		File file = new File(filePath);
 		if (!file.exists()) {
 			System.out.println("Error: Menu file not found - " + filePath);
@@ -60,24 +77,24 @@ public class Menu {
 		}
 	}
 
-	public List<Item> getItemList() {
+	private List<Item> getItemList() {
 		return Collections.unmodifiableList(items);
 	}
 
-	public Item findItemById(String id) {
+	private Item findItemById(String id) {
 		return items.stream()
 				   .filter(item -> item.getId().equals(id))
 				   .findFirst()
 				   .orElse(null);
 	}
 
-	public List<Item> findItemsByCategory(String category) {
+	private List<Item> findItemsByCategory(String category) {
 		return items.stream()
 				   .filter(item -> item.getCategory().equals(category))
 				   .collect(Collectors.toList());
 	}
 
-	public void addItem(Item item) {
+	private void addItem(Item item) {
 		if (item == null) {
 			throw new IllegalArgumentException("Item cannot be null");
 		}
@@ -86,34 +103,5 @@ public class Menu {
 			throw new IllegalArgumentException("Item ID already exists: " + item.getId());
 		}
 		items.add(item);
-	}
-
-	public void removeItemById(String id) {
-		Item item = findItemById(id);
-		if (item != null) {
-			items.remove(item);
-		}
-	}
-
-	// Get all available categories
-	public List<String> getAllCategories() {
-		return items.stream()
-				   .map(Item::getCategory)
-				   .distinct()
-				   .collect(Collectors.toList());
-	}
-
-	// Get total number of menu items
-	public int getItemCount() {
-		return items.size();
-	}
-	
-	public int indexOf(Item _item) {
-		for (int i = 0; i < items.size(); i++) {
-			if (items.get(i).getId().equals(_item.getId())) {
-				return i;
-			}
-		}
-		return -1;
 	}
 }
