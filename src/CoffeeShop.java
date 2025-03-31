@@ -5,22 +5,8 @@ public class CoffeeShop {
     public static void main(String[] args) {
         System.out.println("Welcome to our coffee shop");
 
-        // new Menu
-        Menu menu = new Menu();
-        menu.loadMenuFromFile("menu.txt");
-
         // new Orderlist
-        OrderList orderList = new OrderList(menu);
-        try {
-			orderList.loadOrderListFromFile("orders.txt");
-            System.out.println(orderList.getOrderList().size());
-            for (Order order : orderList.getOrderList()) {
-                System.out.println(order.getOrderId());
-            }
-		} catch (InvalidOrderException e) {
-
-			e.printStackTrace();
-		}
+        OrderList orderList = new OrderList();
 
         //orderProcessor
         OrderProcessor orderProcessor = new OrderProcessor(orderList);
@@ -31,7 +17,7 @@ public class CoffeeShop {
 
         threadManager.startServers(2);
 
-        // 将已有订单放入线程队列进行处理
+        // 灏嗗凡鏈夎鍗曟斁鍏ョ嚎绋嬮槦鍒楄繘琛屽鐞�
         for (Order order : orderList.getOrderList()) {
             threadedProcessor.addOrder(order);
         }
