@@ -37,5 +37,14 @@ public class CafeLogger {
             System.err.println("Failed to write log: " + e.getMessage());
         }
     }
+    public boolean clearLog() {
+        try (FileWriter writer = new FileWriter(LOG_FILE)) {
+            // 打开文件并立即关闭，会清空文件内容
+            return true;
+        } catch (IOException e) {
+            System.err.println("Failed to clear log: " + e.getMessage());
+            return false;
+        }
+    }
 }
 

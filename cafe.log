@@ -1,0 +1,38 @@
+[2025-04-01 17:52:10] Current server number: 4
+
+[2025-04-01 17:52:10] order:O001 is added into wait queue.
+
+[2025-04-01 17:52:10] Server-1 processing: O001
+
+[2025-04-01 17:52:11] order:O002 is added into wait queue.
+
+[2025-04-01 17:52:11] Server-2 processing: O002
+
+[2025-04-01 17:52:12] Server-3 processing: O003
+
+[2025-04-01 17:52:12] order:O003 is added into wait queue.
+
+[2025-04-01 17:52:13] Server-4 processing: O004
+
+[2025-04-01 17:52:13] order:O004 is added into wait queue.
+
+[2025-04-01 17:52:14] order:O005 is added into wait queue.
+
+[2025-04-01 17:52:15] order:O006 is added into wait queue.
+
+[2025-04-01 17:52:16] order:O007 is added into wait queue.
+
+[2025-04-01 17:52:17] order:O008 is added into wait queue.
+
+[2025-04-01 17:52:18] order:O009 is added into wait queue.
+
+[2025-04-01 17:52:19] order:O010 is added into wait queue.
+
+[2025-04-01 17:52:31] Server-2 completed : O002, original price is 95.0, discount price is 85.5
+
+[2025-04-01 17:52:31] Server-2 processing: O005
+
+[2025-04-01 17:52:35] Server-1 completed : O001, original price is 135.0, discount price is 108.0
+
+[2025-04-01 17:52:35] Server-1 processing: O006
+

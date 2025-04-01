@@ -104,7 +104,7 @@ public class ThreadMonitorUI extends JFrame {
 	            activeText.append("Total cost: ").append(activeOrder.calculateTotalCost()).append(" \n");
 	            
 	        } else {
-	            activeText.append("Available (no active order)\n");
+	            activeText.append("Free\n");
 	        }
 	        
 	        info_sever[i-1].setText(activeText.toString());
