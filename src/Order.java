@@ -33,6 +33,15 @@ public class Order {
     public String getTimeStamp() { return timeStamp; }
     public List<Item> getItemList() { return itemList; }
 
+    public double calculateOriginalCost() {
+        double total = 0;
+        for (Item item : itemList) {
+            total += item.getCost();   
+        }
+        // Return the final total cost after applying all applicable discounts
+     
+        return total;
+    }
     
     public double calculateTotalCost() {
         double total = 0;

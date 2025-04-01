@@ -4,7 +4,6 @@ public class Item {
     private String category;
     private double cost;
     private static final int MAX_DESCRIPTION_LENGTH = 50; //max description
-    private int number;
     private double preparationTime; // new attribute to describe preparationTime
 
     public Item(String id, String description, String category, double cost) throws Itemexception {
@@ -75,7 +74,5 @@ public class Item {
         return cost;
     }
 
-    public int getNumber() {
-        return number;
-    }
+
 }
