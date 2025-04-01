@@ -130,6 +130,7 @@ public class OrderList {
                     synchronized (orders) {
                     	addOrder(order);
                     	System.out.println("order added.");
+                    	CafeLogger.getInstance().log("order:"+order.getOrderId()+ " is added into wait queue.\n");
                     }
 
                     Thread.sleep(1000); 

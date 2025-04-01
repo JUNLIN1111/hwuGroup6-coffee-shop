@@ -33,7 +33,7 @@ public class ServerThread implements Runnable {
 
     private void processOrder(Order order) throws InterruptedException {
         System.out.println(serverName + " processing: " + order.getOrderId());
-
+        CafeLogger.getInstance().log(serverName + " processing: " + order.getOrderId()+"\n");
         activeOrders.put(serverName, order);
         int totalTime = 0;
         for (Item item : order.getItemList()) {
@@ -42,6 +42,7 @@ public class ServerThread implements Runnable {
         Thread.sleep(totalTime);
 
         System.out.printf("%s completed: %s ($%.2f)%n", serverName, order.getOrderId(), order.calculateTotalCost());
+        CafeLogger.getInstance().log(serverName + " completed : " + order.getOrderId()+", original price is "+order.calculateOriginalCost()+", discount price is "+order.calculateTotalCost()+"\n");
         activeOrders.remove(serverName);
     }
     
