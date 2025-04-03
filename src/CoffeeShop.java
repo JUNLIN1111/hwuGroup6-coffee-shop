@@ -17,8 +17,9 @@ public class CoffeeShop {
         }
 
         final ThreadedOrderProcessor threadedProcessor = new ThreadedOrderProcessor();
-        final OrderThreadManager threadManager = new OrderThreadManager();
-        
+        final OrderThreadManager threadManager = new OrderThreadManager(threadedProcessor);
+
+        // choose number of servers here
         CafeLogger.getInstance().log("Current server number: 4\n");
         threadManager.startServers(4);
         
