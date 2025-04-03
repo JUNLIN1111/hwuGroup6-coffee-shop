@@ -14,22 +14,26 @@ public class CoffeeShopUI extends JFrame {
     private JList<String> orderList; // List to display the current order
     private DefaultListModel<String> orderListModel; // Model for the order list
     private JLabel totalPriceLabel; // Label to display the total price
+    private JLabel queueStatusLabel; // New label to display queue status
     private OrderProcessor orderProcessor; // OrderProcessor to handle order processing
     private ThreadedOrderProcessor threadedProcessor; // Processor for threaded execution
+    private JSlider speedSlider; // Slider for speed control
 
     public CoffeeShopUI(OrderProcessor orderProcessor, ThreadedOrderProcessor threadedProcessor) {
         this.orderProcessor = orderProcessor;
         this.threadedProcessor = threadedProcessor;
 
-        setTitle("Coffee Shop Simulator"); // Set the title of the window
-        setSize(800, 600); // Set the size of the window
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Close the application when the window is closed
-        setLayout(new BorderLayout()); // Use BorderLayout for the main layout
+        setTitle("Coffee Shop Simulator");
+        setSize(1000, 600);
+        setMinimumSize(new Dimension(800, 600));
+        setResizable(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
         // Initialize the menu list
         menuListModel = new DefaultListModel<>();
         menuList = new JList<>(menuListModel);
-        loadMenu(); // Load menu items into the list model
+        loadMenu();
 
         // Initialize the order list
         orderListModel = new DefaultListModel<>();
@@ -47,7 +51,20 @@ public class CoffeeShopUI extends JFrame {
         JButton reportButton = new JButton("Generate Report");
         reportButton.addActionListener(e -> generateFinalReport());
 
-        totalPriceLabel = new JLabel("Total Price: $0.00"); // Initialize total price label
+        totalPriceLabel = new JLabel("Total Price: $0.00");
+        queueStatusLabel = new JLabel("Queue: 0/" + threadedProcessor.getMaxQueueSize()); // Initialize queue status
+
+        // Speed control slider
+        speedSlider = new JSlider(JSlider.HORIZONTAL, 10, 500, 100);
+        speedSlider.setMajorTickSpacing(100);
+        speedSlider.setMinorTickSpacing(10);
+        speedSlider.setPaintTicks(true);
+        speedSlider.setPaintLabels(true);
+        speedSlider.addChangeListener(e -> {
+            double factor = speedSlider.getValue() / 100.0;
+            threadedProcessor.setSpeedFactor(factor);
+            CafeLogger.getInstance().log("Simulation speed set to: " + factor + "x\n");
+        });
 
         // Left panel for the menu
         JPanel leftPanel = new JPanel(new BorderLayout());
@@ -58,20 +75,44 @@ public class CoffeeShopUI extends JFrame {
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(new JLabel("Current Order"), BorderLayout.NORTH);
         rightPanel.add(new JScrollPane(orderList), BorderLayout.CENTER);
-        rightPanel.add(totalPriceLabel, BorderLayout.SOUTH);
+        JPanel rightBottomPanel = new JPanel(new GridLayout(2, 1)); // Stack total price and queue status
+        rightBottomPanel.add(totalPriceLabel);
+        rightBottomPanel.add(queueStatusLabel);
+        rightPanel.add(rightBottomPanel, BorderLayout.SOUTH);
 
-        // Panel for buttons
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(addButton);
-        buttonPanel.add(submitButton);
-        buttonPanel.add(reportButton);
+        // Panel for buttons with GridBagLayout
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        buttonPanel.add(addButton, gbc);
+
+        gbc.gridx = 1;
+        buttonPanel.add(submitButton, gbc);
+
+        gbc.gridx = 2;
+        buttonPanel.add(reportButton, gbc);
+
+        gbc.gridx = 3;
+        buttonPanel.add(new JLabel("Speed:"), gbc);
+
+        gbc.gridx = 4;
+        gbc.weightx = 1.0;
+        buttonPanel.add(speedSlider, gbc);
 
         // Add panels to the main frame
         add(leftPanel, BorderLayout.WEST);
         add(rightPanel, BorderLayout.EAST);
         add(buttonPanel, BorderLayout.SOUTH);
+        add(new JLabel("Coffee Shop Simulator"), BorderLayout.NORTH);
 
-        setVisible(true); // Make the window visible
+        // Start a timer to update queue status every second
+        new Timer(1000, e -> updateQueueStatus()).start();
+
+        setVisible(true);
     }
 
     private void loadMenu() {
@@ -105,17 +146,19 @@ public class CoffeeShopUI extends JFrame {
         }
         try {
             Order order = new Order("O" + System.currentTimeMillis(), "Guest", "Now", convertToItems());
-            orderProcessor.getList().addOrder(order);
-            threadedProcessor.addOrder(order); // 添加到线程处理队列
-
-            double total = orderProcessor.calculateOrderTotal(order);
-            totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
-
-            orderListModel.clear();
-        } catch (InvalidOrderException e) {
-            System.out.println(e.getMessage());
+            if (threadedProcessor.addOrder(order)) { // Check if order was successfully added
+                orderProcessor.getList().addOrder(order); // Add to OrderProcessor only if queued
+                double total = orderProcessor.calculateOrderTotal(order);
+                totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
+                orderListModel.clear();
+                showMessage("Order submitted successfully!", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                showMessage("Order queue is full (" + threadedProcessor.getMaxQueueSize() + " orders max)! Please wait and try again.", JOptionPane.WARNING_MESSAGE);
+            }
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            showMessage("Error submitting order: " + e.getMessage(), JOptionPane.ERROR_MESSAGE);
+        } catch (InvalidOrderException e) {
+            showMessage("Invalid order: " + e.getMessage(), JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -185,5 +228,17 @@ public class CoffeeShopUI extends JFrame {
 
     private void showMessage(String message, int messageType) {
         JOptionPane.showMessageDialog(this, message, "Message", messageType);
+    }
+
+    private void updateQueueStatus() {
+        int currentSize = threadedProcessor.getQueueSize();
+        int maxSize = threadedProcessor.getMaxQueueSize();
+        queueStatusLabel.setText("Queue: " + currentSize + "/" + maxSize);
+        // Optional: Highlight when queue is full
+        if (currentSize >= maxSize) {
+            queueStatusLabel.setForeground(Color.RED);
+        } else {
+            queueStatusLabel.setForeground(Color.BLACK);
+        }
     }
 }
