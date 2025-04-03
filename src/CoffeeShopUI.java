@@ -14,7 +14,7 @@ public class CoffeeShopUI extends JFrame {
     private JList<String> orderList; // List to display the current order
     private DefaultListModel<String> orderListModel; // Model for the order list
     private JLabel totalPriceLabel; // Label to display the total price
-    private JLabel queueStatusLabel; // New label to display queue status
+//    private JLabel queueStatusLabel; // New label to display queue status
     private OrderProcessor orderProcessor; // OrderProcessor to handle order processing
     private ThreadedOrderProcessor threadedProcessor; // Processor for threaded execution
     private JSlider speedSlider; // Slider for speed control
@@ -52,7 +52,7 @@ public class CoffeeShopUI extends JFrame {
         reportButton.addActionListener(e -> generateFinalReport());
 
         totalPriceLabel = new JLabel("Total Price: $0.00");
-        queueStatusLabel = new JLabel("Queue: 0/" + threadedProcessor.getMaxQueueSize()); // Initialize queue status
+//        queueStatusLabel = new JLabel("Queue: 0/" + threadedProcessor.getMaxQueueSize()); // Initialize queue status
 
         // Speed control slider
         speedSlider = new JSlider(JSlider.HORIZONTAL, 10, 500, 100);
@@ -77,7 +77,7 @@ public class CoffeeShopUI extends JFrame {
         rightPanel.add(new JScrollPane(orderList), BorderLayout.CENTER);
         JPanel rightBottomPanel = new JPanel(new GridLayout(2, 1)); // Stack total price and queue status
         rightBottomPanel.add(totalPriceLabel);
-        rightBottomPanel.add(queueStatusLabel);
+//        rightBottomPanel.add(queueStatusLabel);
         rightPanel.add(rightBottomPanel, BorderLayout.SOUTH);
 
         // Panel for buttons with GridBagLayout
@@ -110,7 +110,7 @@ public class CoffeeShopUI extends JFrame {
         add(new JLabel("Coffee Shop Simulator"), BorderLayout.NORTH);
 
         // Start a timer to update queue status every second
-        new Timer(1000, e -> updateQueueStatus()).start();
+        
 
         setVisible(true);
     }
@@ -230,15 +230,5 @@ public class CoffeeShopUI extends JFrame {
         JOptionPane.showMessageDialog(this, message, "Message", messageType);
     }
 
-    private void updateQueueStatus() {
-        int currentSize = threadedProcessor.getQueueSize();
-        int maxSize = threadedProcessor.getMaxQueueSize();
-        queueStatusLabel.setText("Queue: " + currentSize + "/" + maxSize);
-        // Optional: Highlight when queue is full
-        if (currentSize >= maxSize) {
-            queueStatusLabel.setForeground(Color.RED);
-        } else {
-            queueStatusLabel.setForeground(Color.BLACK);
-        }
-    }
+    
 }
