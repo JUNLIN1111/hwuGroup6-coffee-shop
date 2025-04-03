@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-//鐢ㄤ簡鍗曚緥妯″紡
+
 public class CafeLogger {
 
     // Use volatile to ensure visibility in a multithreaded environment
@@ -39,7 +39,7 @@ public class CafeLogger {
     }
     public boolean clearLog() {
         try (FileWriter writer = new FileWriter(LOG_FILE)) {
-            // 打开文件并立即关闭，会清空文件内容
+            // clear 
             return true;
         } catch (IOException e) {
             System.err.println("Failed to clear log: " + e.getMessage());
