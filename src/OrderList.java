@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -31,6 +30,7 @@ public class OrderList {
     // producer method
     public synchronized void addOrder(Order order) throws InterruptedException {
         orders.add(order);
+        CafeLogger.getInstance().log("order:" + order.getOrderId() + " is added into wait queue.\n");
         notifyAll();
     }
     
@@ -130,7 +130,6 @@ public class OrderList {
                     synchronized (orders) {
                     	addOrder(order);
                     	System.out.println("order added.");
-                    	CafeLogger.getInstance().log("order:"+order.getOrderId()+ " is added into wait queue.\n");
                     }
 
                     Thread.sleep(1000); 
