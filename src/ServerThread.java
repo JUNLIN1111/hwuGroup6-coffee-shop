@@ -3,10 +3,12 @@ import java.util.Map;
 
 public class ServerThread implements Runnable {
     private final String serverName;
+    private final ThreadedOrderProcessor processor; // Add reference to processor
     private Order order;
     private final Map<String, Order> activeOrders = new HashMap<>();
 
-    public ServerThread(String name) {
+    public ServerThread(String name,ThreadedOrderProcessor processor) {
+    	this.processor = processor;
         this.serverName = name;
     }
 
@@ -39,7 +41,12 @@ public class ServerThread implements Runnable {
         for (Item item : order.getItemList()) {
             totalTime += (int) (item.getPreparationTime() * 10); // ms
         }
-        Thread.sleep(totalTime);
+        
+     // Apply speed factor: smaller factor = faster, larger factor = slower
+        long adjustedTime = (long) (totalTime * processor.getSpeedFactor());
+//        System.out.printf("dealing time :"+adjustedTime);
+        Thread.sleep(adjustedTime);
+//        Thread.sleep(totalTime);
 
         System.out.printf("%s completed: %s ($%.2f)%n", serverName, order.getOrderId(), order.calculateTotalCost());
         CafeLogger.getInstance().log(serverName + " completed : " + order.getOrderId()+", original price is "+order.calculateOriginalCost()+", discount price is "+order.calculateTotalCost()+"\n");
