@@ -24,14 +24,21 @@ public class OrderList {
     }
 
     public List<Order> getOrderList() {
-        return orders; // Getter to retrieve the list of orders
+        return orders; // Getter to retrieve thae list of orders
     }
 
-    // producer method
-    public synchronized void addOrder(Order order) throws InterruptedException {
+    private static final int MAX_QUEUE_SIZE = 10; 
+
+    // Modified addOrder method
+    public synchronized boolean addOrder(Order order) throws InterruptedException {
+        if (orders.size() >= MAX_QUEUE_SIZE) {
+            CafeLogger.getInstance().log("Queue full (max " + MAX_QUEUE_SIZE + "). Cannot add order: " + order.getOrderId() + "\n");
+            return false; // Addition failed
+        }
         orders.add(order);
         CafeLogger.getInstance().log("order:" + order.getOrderId() + " is added into wait queue.\n");
         notifyAll();
+        return true; // Addition succeeded
     }
     
     // consumer method
@@ -40,7 +47,7 @@ public class OrderList {
             wait();
         }
         Order order = orders.remove(0);
-        activeOrders.put(serverName, order); // 记录当前服务员处理的订单
+        activeOrders.put(serverName, order); 
         return order;
     }
 
