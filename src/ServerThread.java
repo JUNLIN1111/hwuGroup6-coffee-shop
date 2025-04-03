@@ -32,9 +32,9 @@ public class ServerThread implements Runnable {
     
 
     private void processOrder(Order order) throws InterruptedException {
-        System.out.println(serverName + " processing: " + order.getOrderId());
-        CafeLogger.getInstance().log(serverName + " processing: " + order.getOrderId()+"\n");
         activeOrders.put(serverName, order);
+        System.out.println(serverName + " processing: " + order.getOrderId());
+        CafeLogger.getInstance().log(serverName + " processing: " + order.getOrderId() + "\n");
         int totalTime = 0;
         for (Item item : order.getItemList()) {
             totalTime += (int) (item.getPreparationTime() * 10); // ms
