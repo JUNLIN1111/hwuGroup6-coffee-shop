@@ -6,6 +6,7 @@ public class ServerThread implements Runnable {
     private final ThreadedOrderProcessor processor; // Add reference to processor
     private Order order;
     private final Map<String, Order> activeOrders = new HashMap<>();
+    private boolean isFree;
 
     public ServerThread(String name,ThreadedOrderProcessor processor) {
     	this.processor = processor;
@@ -18,6 +19,7 @@ public class ServerThread implements Runnable {
             try {
                 Order order = OrderList.getInstance().getNextOrder(serverName);
                 if (order != null) {
+                	isFree=false;
                     processOrder(order);
                 }
                 OrderList.getInstance().finishOrder(serverName);
@@ -51,7 +53,10 @@ public class ServerThread implements Runnable {
         System.out.printf("%s completed: %s ($%.2f)%n", serverName, order.getOrderId(), order.calculateTotalCost());
         CafeLogger.getInstance().log(serverName + " completed : " + order.getOrderId()+", original price is "+order.calculateOriginalCost()+", discount price is "+order.calculateTotalCost()+"\n");
         activeOrders.remove(serverName);
+        isFree=true;
     }
     
-
+    public boolean isFree() {
+    	return isFree;
+    }
 }
