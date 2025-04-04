@@ -29,6 +29,16 @@ public class CoffeeShop {
             ThreadMonitorUI.launch(threadedProcessor);
         });
 
+     // 启动后台线程来检查线程是否空闲
+        Thread idleCheckerThread = new Thread(() -> {
+            try {
+                threadManager.checkAndExitIfIdle();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        idleCheckerThread.start();
+
         Runtime.getRuntime().addShutdownHook(new Thread(threadManager::stopServers));
     }
 }
